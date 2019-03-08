@@ -1,14 +1,7 @@
 body{
     margin: 0px;
     padding: 0px;
-    Background: #45ef45;
+    height: 100%;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    font-size: 1.2rem;
-}
-
-canvas{
-    display: block;
-    width: 900px; 
-    height: 900px;
-    margin: 0 auto;
+    font-size: 1rem;
 }

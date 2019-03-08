@@ -36,11 +36,17 @@ down.src = "audio/down.mp3";
 // create the snake
 
 let snake = [];
+let snake2 = [];
 
 snake[0] = {
-    x : 9 * box,
-    y : 10 * box
+    x : 1 * box,
+    y : 3 * box
 };
+
+ snake2[0] = {
+    x: 4 * box,
+    y: 12* box 
+} 
 
 // create the food
 
