@@ -4,13 +4,25 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Snake Game</title>
+    <title>Multiplayer Snake Race</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="css/main.css" />
 </head>
 
 <body>
-    <canvas id="snake" height="608" width="608"> </canvas>
+    <div id="heading">Snake Race 1.0</div>
+    <nav id="menu">
+        <ul>
+            <li><a href="#"></a><input type="button" id="join" value="Join"></li>
+            <li><a href="#"><input type="button" id="play" value="Play"></a></li>
+        </ul>
+    </nav>
+    <div id="game-field">
+        <canvas id="snake" height="608" width="608">
+            Your Browser does not support the canvas element
+        </canvas>
+    </div>
+    <footer>Created by Icardi</footer>
     <script src="snake.js"></script>
 </body>
 
