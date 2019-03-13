@@ -5,3 +5,17 @@ body{
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     font-size: 1rem;
 }
+
+#heading{
+    height: 50px;
+    width: 100%;
+    margin-top: 0;
+    background-color: #333;
+    color: #fff;
+}
+
+#field{
+    background-color: black;
+    margin: 0 auto;
+    border: 20px solid #c3c3c3;
+}
