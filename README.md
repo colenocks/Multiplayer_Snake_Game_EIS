@@ -10,4 +10,11 @@ Forked from https://github.com/CodeExplainedRepo/Snake-JavaScript
 
 Multiplayer_Game_EIS
 
+Log: 12/03/2019
+Still working on the game UI and the algorithm to transform the snake game into a multiplayer.
 
+also working on understanding the technologies to help achieve the multiplayer feature.
+
+the project at this time is still in the inception stage...
+
+cole, out!
