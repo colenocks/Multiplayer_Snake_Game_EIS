@@ -18,3 +18,7 @@ also working on understanding the technologies to help achieve the multiplayer f
 the project at this time is still in the inception stage...
 
 cole, out!
+
+Log: 14/03/2019
+Created the second snake, a different object on the same machine, with a different position and different color.
+with different key codes for control 
