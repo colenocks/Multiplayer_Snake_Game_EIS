@@ -1,9 +1,13 @@
+*{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
 body{
-    margin: 0px;
-    padding: 0px;
+    margin: 0 auto;
     height: 100%;
+    overflow: hidden;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    font-size: 1rem;
 }
 
 #heading{
@@ -13,9 +17,25 @@ body{
     background-color: #333;
     color: #fff;
 }
+#menu{
+    float: left;
+    margin: 10px 15px;
+}
+#menu li{
+    margin-bottom: 10px;
+}
+#menu ul li input{
+    height: 50px;
+    width: 100px;
+}
 
-#field{
-    background-color: black;
+/* #game-field{
+    margin-top: 10px;
+    height:610px;
+    width: 70%;
     margin: 0 auto;
-    border: 20px solid #c3c3c3;
+} */
+#snake{
+    background-color: black;
+    border: 20px solid #252525;
 }
