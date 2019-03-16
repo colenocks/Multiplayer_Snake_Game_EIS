@@ -1,0 +1,25 @@
+{
+  "name": "multiplayer_snake_game_eis",
+  "version": "1.0.0",
+  "description": "The Snake game, created using JavaScript, and The HTML5 canvas.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/colenocks/Multiplayer_Snake_Game_EIS.git"
+  },
+  "author": "Icardi",
+  "license": "MIT",
+  "dependencies": {
+    "express": "*",
+    "socket.io": "*",
+    "socket.io-client": "^2.2.0"
+  },
+  "bugs": {
+    "url": "https://github.com/colenocks/Multiplayer_Snake_Game_EIS/issues"
+  },
+  "homepage": "https://github.com/colenocks/Multiplayer_Snake_Game_EIS#readme"
+}
