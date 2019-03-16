@@ -4,9 +4,11 @@
     list-style: none;
 }
 body{
-    margin: 0 auto;
+   /*  overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center; */
     height: 100%;
-    overflow: hidden;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
@@ -19,7 +21,7 @@ body{
 }
 #menu{
     float: left;
-    margin: 10px 15px;
+    margin-top: 10px;
 }
 #menu li{
     margin-bottom: 10px;
@@ -38,4 +40,8 @@ body{
 #snake{
     background-color: black;
     border: 20px solid #252525;
+}
+
+footer{
+    text-align: center;
 }
