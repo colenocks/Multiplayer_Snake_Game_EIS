@@ -1,0 +1,78 @@
+//Event listener for direction
+    function getDirection2(e) {
+        if (e.keyCode == 65 && direction2 != "right") {
+            direction2 = "left";
+            left.play();
+        }
+        else if (e.keyCode == 87 && direction2 != "down") {
+            direction2 = "up";
+            up.play();
+        }
+        else if (e.keyCode == 68 && direction2 != "left") {
+            direction2 = "right";
+            right.play();
+        }
+        else if (e.keyCode == 83 && direction2 != "up") {
+            direction2 = "down";
+            down.play();
+        }
+    }
+
+    //snake 2 position
+    worm[0] = {
+        x: cvsW / cell - 1,
+        y: cvsH / cell - 1
+    }
+
+    //draw snake function
+    function drawWorm(posX, posY, i) {
+        ctx.fillStyle = (i == 0) ? "blue" : "#333";
+        ctx.fillRect(posX * cell, posY * cell, cell, cell);
+
+        //border around the snake
+        ctx.fillStyle = "#000";
+        ctx.strokeRect(posX * cell, posY * cell, cell, cell);
+    }
+
+    //draw worm with position
+    for (var i = 0; i < worm.length; i++) {
+            var posX = worm[i].x;
+            var posY = worm[i].y;
+            drawWorm(posX, posY, i);
+        }
+
+//add event that disables direction for 3 seconds
+    /* function pauseSnake(e) {
+        if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
+            //disable direction
+            direction = "";
+            //
+        }
+    } */
+
+    // check collision function
+    /* function collision(head, array) {
+        for (let i = 0; i < array.length; i++) {
+            if (head.x == array[i].x && head.y == array[i].y) {
+                return true;
+            }
+        }
+        return false;
+    } */    
+
+    // load audio files
+    let dead = new Audio();
+    let eat = new Audio();
+    let up = new Audio();
+    let right = new Audio();
+    let left = new Audio();
+    let down = new Audio();
+
+    dead.src = "audio/dead.mp3";
+    eat.src = "audio/eat.mp3";
+    up.src = "audio/up.mp3";
+    right.src = "audio/right.mp3";
+    left.src = "audio/left.mp3";
+    down.src = "audio/down.mp3";
+
+    
