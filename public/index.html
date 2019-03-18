@@ -14,30 +14,45 @@
 </head>
 
 <body>
-    <header id="heading">Snake Race 1.0</header>
-    <div class="container">
+    <header id="heading">
+        <h4>Snake Race 1.0</h4>
+    </header>
+    <div class="container-fluid">
         <div class="row">
-            <div class="col">
+            <div class="col-sm-2">
                 <div id="menu">
                     <ul>
-                        <li><a href="#"></a><input type="button" id="join" class="btn btn-primary" value="Join"></li>
-                        <li><a href="#"><input type="button" id="play" class="btn btn-primary" value="Play"></a></li>
+                        <li><a href="#"></a><input type="button" id="join" class="btn btn-primary btn-lg" value="Join">
+                        </li>
+                        <li><a href="#"><input type="button" id="start" class="btn btn-success btn-lg"
+                                    value="Start Game"></a>
+                        </li>
                     </ul>
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-sm-8">
+                <div id="user-form">
+                    <div class="form-group">
+                        <label>Enter Name</label>
+                        <input type="text" class="form-control" id="player-name" placeholder="Enter Name">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </div>
                 <div id="game-field">
+                    <div id="welcome-div">
+                        <h1>Hi, Welcome to the Snake Race. Click <span>Play Game</span> to start, Goodluck!</h1>
+                    </div>
                     <canvas id="snake" height="520" width="680">
                         Your Browser does not support the canvas element
                     </canvas>
                 </div>
             </div>
-            <div class="col"></div>
+            <div class="col-sm-2"></div>
         </div>
     </div>
     <footer>Created by Icardi</footer>
 
-    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="/socket.io/socket.io.js"></script>
     <script src="/client.js"></script>
 </body>
 
