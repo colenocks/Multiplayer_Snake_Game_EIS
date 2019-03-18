@@ -22,3 +22,14 @@ cole, out!
 Log: 14/03/2019
 Created the second snake, a different object on the same machine, with a different position and different color.
 with different key codes for control 
+
+Log: 18/03/2019
+just waited till i had substantial content before updated the read me file.
+
+removed the second snake object i created before, as i wait to work out the logic to have it automatically created when a second user is connected.
+
+have established a way to send data back and forth from the server to client(s) at any point of need.
+
+have added some UI elements to make it more interactive:
+included logic in button that displays the snake canvas when clicked.
+i have also included a user login form that serves as an entrance for the game area.
