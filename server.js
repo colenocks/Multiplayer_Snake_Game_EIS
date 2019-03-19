@@ -19,29 +19,43 @@ io.on('connection', (socket) => {
     clients.push(socket);
     console.log('A client connected. Connections: %s', clients.length);
 
-    socket.on('message', (clientMsg, height, width, unit) => {
+    socket.on('message', (clientMsg, width, height, unit) => {
         console.log('message from client: ' + clientMsg + height + width + unit);
-        cvsH = height;
         cvsW = width;
+        cvsH = height;
         cell = unit;
     });
 
+    //check for unique client ID
+    for (var i = 0; i < clients.length; i++) {
+        if (clients[i] == 0) {
+            io.emit('snake position', 0, 0);
+        }
+        else if (clients[i] == 1) {
+            io.emit('snake position', (cvsW / cell - 1), (cvsH / cell - 1));
+        }
+    }
+
+    function generatePosition(dim) {
+        var rand = Math.floor(Math.random() * (dim / cell - 1) + 1);
+        //reject generation of values 0 or 20
+        return (rand == 0 || rand == dim) ? generatePosition(dim) : rand;
+    }
     //food initial position
-    let food = {
-        x: Math.floor(Math.random() * (cvsW / cell - 1) + 1),
-        y: Math.floor(Math.random() * (cvsH / cell - 1) + 1)
-    };
 
     if (clients.length == 2) {
         //pass the food position as parameter
-        socket.emit('food', food.x, food.y);
-    }else{
+        io.emit('food', generatePosition(cvsW / cell - 1), generatePosition(cvsH / cell - 1));
+    } else {
         //do something
+        /* foodx = generatePosition(cvsW / cell - 1);
+        foody = generatePosition(cvsH / cell - 1); */
+        foodx = -7;
     }
 
     //when player eats food the player that eats generates a new position and emits to all clients + server
-    socket.on('eaten', (x, y)=>{
-        console.log('food is at position ('+x+', '+y+')');
+    socket.on('eaten', (x, y) => {
+        console.log('food is at position (' + x + ', ' + y + ')');
     });
 
     socket.on('disconnect', (socket) => {
