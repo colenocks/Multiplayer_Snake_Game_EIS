@@ -1,174 +1,176 @@
 
-window.onload = function () {
-    var userform = document.getElementById('user-form');
-    var gamefield = document.getElementById('game-field');
-    var menu = document.getElementById('menu');
-    var loginBtn = document.getElementById('login');
-    var joinBtn = document.getElementById('join');
-    var startBtn = document.getElementById('start');
-    var field = document.getElementById('snake');
-    var welcomeDiv = document.getElementById('welcome-div');
-    var socket;
+//window.onload = function () {
+var userform = document.getElementById('user-form');
+var gamefield = document.getElementById('game-field');
+var menu = document.getElementById('menu');
+var loginBtn = document.getElementById('login');
+var joinBtn = document.getElementById('join');
+var startBtn = document.getElementById('start');
+var field = document.getElementById('snake');
+var welcomeDiv = document.getElementById('welcome-div');
 
-    loginBtn.onclick = function () {
-        // display gamefield 
-        gamefield.style.visibility = "visible";
-        menu.style.visibility = "visible";
-        // append username to array of activePlayers
+var socket;
 
-        // set userform display to none
-        userform.style.display = "none";
-    }
+loginBtn.onclick = function () {
+    // display gamefield 
+    gamefield.style.visibility = "visible";
+    menu.style.visibility = "visible";
+    // append username to array of activePlayers
 
-    startBtn.onclick = function (e) {
-        welcomeDiv.style.display = 'none';
-        field.style.visibility = 'visible';
-        menu.style.visibility = "visible";
-
-        //initiate a connection
-        socket = io(); //normally the url for the server is passed in here, but express server is hosting up the static html as so
-        // var io = require('socket.io')(http)
-
-        //acknowledge connection from server and send dimensions across
-        socket.emit('message', 'hi from client', cvsW, cvsH, cell);
-    };
-
-    //food positions x, y
-    var foodX, foodY;
-
-    //receives the food object as a parameter
-    socket.on('food', (x, y) => {
-        foodX = x;
-        foodY = y;
-    });
-
-    const cvs = document.getElementById("snake");
-    const ctx = cvs.getContext("2d");
-
-    const cvsH = cvs.clientHeight;
-    const cvsW = cvs.clientWidth;
-    //snake default cell size
-    const cell = 20;
-
-    //draw food function
-    function drawFood(x, y) {
-        /* ctx.beginPath();
-        ctx.arc(food.x, food.y, 10, 0, 2 * Math.PI);
-        ctx.stroke();
-        ctx.fill(); */
-        ctx.fillStyle = "#fff000";
-        ctx.fillRect(x * cell, y * cell, cell, cell);
-
-        ctx.fillStyle = "#000";
-        ctx.strokeRect(x * cell, y * cell, cell, cell);
-    }
-    // create the snake array
-    let snake = [];
-
-    //listen for server to provide initial position of snake
-    socket.on('snake position', (snakeX, snakeY) => {
-        //initialise snake position
-        snake[0] = {
-            x: snakeX,
-            y: snakeY
-        };
-    });
-
-    //draw snake function
-    function drawSnake(posX, posY, i) {
-        ctx.fillStyle = (i == 0) ? "green" : "#fff";
-        ctx.fillRect(posX * cell, posY * cell, cell, cell);
-
-        //border around the snake
-        ctx.fillStyle = "#000";
-        ctx.strokeRect(posX * cell, posY * cell, cell, cell);
-    }
-
-    let direction;
-    //Event listener for direction
-    function getDirection(e) {
-        if (e.keyCode == 37 && direction != "right") {
-            direction = "left";
-            //left.play();
-        }
-        else if (e.keyCode == 38 && direction != "down") {
-            direction = "up";
-            //up.play();
-        }
-        else if (e.keyCode == 39 && direction != "left") {
-            direction = "right";
-            //right.play();
-        }
-        else if (e.keyCode == 40 && direction != "up") {
-            direction = "down";
-            //down.play();
-        }
-    }
-
-    // draw everything to the canvas
-    function drawAll() {
-        ctx.clearRect(0, 0, cvsW, cvsH)
-        //loops over the snake array to draw all the cells
-        for (var i = 0; i < snake.length; i++) {
-            var posX = snake[i].x;
-            var posY = snake[i].y;
-            drawSnake(posX, posY, i);
-        }
-        drawFood(foodX, foodY);
-
-        //snake old head position
-        let snakeX = snake[0].x;
-        let snakeY = snake[0].y;
-
-        document.addEventListener("keydown", getDirection);
-
-        //if direction is pressed, move snake correspondingly
-        if (direction == "left") snakeX--;
-        else if (direction == "up") snakeY--;
-        else if (direction == "right") snakeX++;
-        else if (direction == "down") snakeY++;
-
-        // if the snake eats the food
-        if (snakeX == foodX && snakeY == foodY) {
-            //score++;
-            //eat.play();
-            foodX = Math.floor(Math.random() * (cvsW / cell - 1) + 1);
-            foodY = Math.floor(Math.random() * (cvsH / cell - 1) + 1);
-
-            //emit the position across all connected including server
-            socket.emit('eaten', foodX, foodY);
-            // we don't remove the tail
-        } else {
-            //remove the tail
-            snake.pop();
-            socket.on('eaten', (x, y) => {
-                //new values for position x and y generated by other player
-                foodX = x;
-                foodY = y;
-            });
-        }
-
-        // add new Head
-        let newHead = {
-            x: snakeX,
-            y: snakeY
-        }
-
-        snake.unshift(newHead);
-
-        //if snake hits the wall
-        if (snakeX < 0 || snakeY < 0 || snakeX >= cvsW / cell || snakeY >= cvsH / cell /*|| collision(newHead, snake) */) {
-            clearInterval(game);
-            //create a function that allows it to pause for 3 seconds and continue again
-            //pauseSnake;
-            //dead.play();
-        }
-    }
-
-    // call draw function every 100 ms
-    //emit this drawAll function to the server js to call every 100ms
-    let game = setInterval(drawAll, 100);
+    // set userform display to none
+    userform.style.display = "none";
 }
+
+startBtn.onclick = function (e) {
+    welcomeDiv.style.display = 'none';
+    field.style.visibility = 'visible';
+    menu.style.visibility = "hidden";
+};
+//initiate a connection
+socket = io(); //normally the url for the server is passed in here, but express server is hosting up the static html as so
+// var io = require('socket.io')(http)
+
+const cvs = document.getElementById("snake");
+const ctx = cvs.getContext("2d");
+
+const cvsH = cvs.clientHeight;
+const cvsW = cvs.clientWidth;
+//snake default cell size
+const cell = 20;
+//food positions x, y
+var foodX, foodY;
+
+//receives the food object as a parameter
+socket.on('food', function (x, y) {
+    //acknowledge connection from server and send dimensions across
+    socket.emit('message', 'hi from client', cvsW, cvsH, cell);
+    foodX = x;
+    foodY = y;
+});
+
+//draw food function
+function drawFood(x, y) {
+    /* ctx.beginPath();
+    ctx.arc(food.x, food.y, 10, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fill(); */
+    ctx.fillStyle = "#fff000";
+    ctx.fillRect(x * cell, y * cell, cell, cell);
+
+    ctx.fillStyle = "#000";
+    ctx.strokeRect(x * cell, y * cell, cell, cell);
+}
+// create the snake array
+let snake = [];
+var sx, sy;
+//listen for server to provide initial position of snake
+socket.on('position', (snakeX, snakeY) => {
+    sx = snakeX;
+    sy = snakeY;
+});
+
+snake[0] = {
+    x: sx,
+    y: sy
+};
+
+//draw snake function
+function drawSnake(posX, posY, i) {
+    ctx.fillStyle = (i == 0) ? "green" : "#fff";
+    ctx.fillRect(posX * cell, posY * cell, cell, cell);
+
+    //border around the snake
+    ctx.fillStyle = "#000";
+    ctx.strokeRect(posX * cell, posY * cell, cell, cell);
+}
+
+let direction;
+//Event listener for direction
+function getDirection(e) {
+    if (e.keyCode == 37 && direction != "right") {
+        direction = "left";
+        //left.play();
+    }
+    else if (e.keyCode == 38 && direction != "down") {
+        direction = "up";
+        //up.play();
+    }
+    else if (e.keyCode == 39 && direction != "left") {
+        direction = "right";
+        //right.play();
+    }
+    else if (e.keyCode == 40 && direction != "up") {
+        direction = "down";
+        //down.play();
+    }
+}
+
+// draw everything to the canvas
+function drawAll() {
+    ctx.clearRect(0, 0, cvsW, cvsH)
+    //loops over the snake array to draw all the cells
+    for (var i = 0; i < snake.length; i++) {
+        var posX = snake[i].x;
+        var posY = snake[i].y;
+        drawSnake(posX, posY, i);
+    }
+    drawFood(foodX, foodY);
+
+    //snake old head position
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    document.addEventListener("keydown", getDirection);
+
+    //if direction is pressed, move snake correspondingly
+    if (direction == "left") snakeX--;
+    else if (direction == "up") snakeY--;
+    else if (direction == "right") snakeX++;
+    else if (direction == "down") snakeY++;
+
+    // if the snake eats the food
+    if (snakeX == foodX && snakeY == foodY) {
+        //score++;
+        //eat.play();
+        foodX = Math.floor(Math.random() * (cvsW / cell - 1) + 1);
+        foodY = Math.floor(Math.random() * (cvsH / cell - 1) + 1);
+
+        //emit the position across all connected including server
+        io.emit('eaten', foodX, foodY);
+        // we don't remove the tail
+    } else {
+        //remove the tail
+        snake.pop();
+        socket.on('eaten', (x, y) => {
+            //new values for position x and y generated by other player
+            foodX = x;
+            foodY = y;
+        });
+    }
+
+    // add new Head
+    let newHead = {
+        x: snakeX,
+        y: snakeY
+    }
+
+    snake.unshift(newHead);
+
+    //if snake hits the wall
+    if (snakeX < 0 || snakeY < 0 || snakeX >= cvsW / cell || snakeY >= cvsH / cell /*|| collision(newHead, snake) */) {
+        clearInterval(game);
+        //create a function that allows it to pause for 3 seconds and continue again
+        //pauseSnake;
+        //dead.play();
+    }
+}
+
+// call draw function every 100 ms
+//emit this drawAll function to the server js to call every 100ms
+let game = setInterval(drawAll, 100);
+
+
+//}
 
 
 

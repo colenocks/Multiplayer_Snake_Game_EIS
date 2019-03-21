@@ -65,7 +65,7 @@ header h4 {
 #snake{
     visibility: hidden;
     background-color: black;
-    border: 20px solid #252525;
+    border: 10px solid #252525;
 }
 
 footer{
