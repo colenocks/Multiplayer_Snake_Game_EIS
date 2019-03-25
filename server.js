@@ -1,75 +1,112 @@
+
 var express = require('express');
+
 var app = express();
-var path = require('path');
-var http = require('http').Server(app);
-app.use(express.static('public'));
 var port = process.env.PORT || 3000;
+var server = app.listen(3000);
 
-var io = require('socket.io')(http);
+app.use(express.static('public'));
 
-app.get('/', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+console.log('server is listening on *: ' + port);
 
-http.listen(port, function () {
-    console.log('listening on *: ' + port);
-});
+var socket = require('socket.io');
+var io = socket(server);
 
-//keep track of clients connected
-var clients = [];
-//keep track of players playing
-var activePlayers = [];
+const canvasHeight = 520;
+const canvasWidth = 680;
+const cell = 20;
 
-var cvsH, cvsW, cell;
+var client = [];
+var position = [{ x: 0, y: 0 }, { x: 30, y: 22 }];
 
-io.on('connection', (socket) => {
-    clients.push(socket);
-    console.log('A client connected. Connections: %s', clients.length);
-    console.log(socket.sessionid);
-    socket.on('message', (clientMsg, width, height, unit) => {
-        console.log('message from client: ' + clientMsg + height + width + unit);
-        cvsW = width;
-        cvsH = height;
-        cell = unit;
+function newPlayer(pos) {
+    this.name;
+    this.id = 1;
+    this.x = position[pos].x;
+    this.y = position[pos].y;
+    this.color = Color();
+    //create snake
+    drawSnake(this.x, this.y, this.color);
+    return { 'name': this.name, 'x': this.x, 'y': this.y }
+}
+
+io.sockets.on('connection', function (socket) {
+    var pos = 0;
+    var currentPlayer = new newPlayer(pos);
+    clients.push(currentPlayer);
+
+    socket.broadcast.emit('currentUsers', clients);
+    socket.emit('welcome', currentPlayer, clients);
+    //console.log('new connection: ' + socket.id);
+
+    socket.on('disconnect', function () {
+        clients.splice(players.indexOf(currentPlayer), 1);
+        console.log(clients);
+        socket.broadcast.emit('playerLeft', clients);
     });
 
-    //food initial position
-
-    if (clients.length == 2) {
-        //initialise snake position
-        //check for unique client ID
-        socket.on('position', function () {
-
-            io.to().emit('position', 0, 0);
-            io.emit('position', (cvsW / cell - 1), (cvsH / cell - 1));
-        });
-
-        //pass the food position as parameter
-        io.emit('food', generatePosition(cvsW / cell - 1), generatePosition(cvsH / cell - 1));
-    } else {
-        //do something
-        /* foodx = generatePosition(cvsW / cell - 1);
-        foody = generatePosition(cvsH / cell - 1); 
-        foodx = -7;*/
+    //draw food
+    /* if (clients.length == 2) {
+        socket.broadcast.emit('DisplayFood', drawFood);
     }
+    else{
+        socket.broadcast.emit('DisplayFood', clients[1].name);
+    } */
 
-    //when player eats food the player that eats generates a new position and emits to all clients + server
-    let foodx, foody;
-    socket.on('eaten', (x, y) => {
-        foodx = x;
-        foody = y;
-        io.emit('eaten', foodx, foody);
-        console.log('new food is at position (' + foodx + ', ' + foody + ')');
-    });
-
-    socket.on('disconnect', (socket) => {
-        clients.splice(clients.indexOf(socket), 1);
-        console.log('A client disconnected: %s clients left', clients.length);
+    socket.on('direction', function (key) {
+        if (key === 38) {
+            currentPlayer.y--;
+            socket.emit('SnakesMoving', players);
+            socket.broadcast.emit('SnakesMoving', players);
+        }
+        if (key === 40) {
+            currentPlayer.y++;
+            socket.emit('SnakesMoving', players);
+            socket.broadcast.emit('SnakesMoving', players);
+        }
+        if (key === 37) {
+            currentPlayer.x--;
+            socket.emit('SnakesMoving', players);
+            socket.broadcast.emit('SnakesMoving', players);
+        }
+        if (key === 39) {
+            currentPlayer.x++;
+            socket.emit('SnakesMoving', players);
+            socket.broadcast.emit('SnakesMoving', players);
+        }
     });
 });
 
-function generatePosition(dim) {
-    var rand = Math.floor(Math.random() * (dim / cell - 1) + 1);
-    //reject generation of values 0 or 20
-    return (rand == 0 || rand == dim) ? generatePosition(dim) : rand;
+//function that draws snake on canvas
+function drawSnake(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x * cell, y * cell, cell, cell);
+    //border around the snake
+    ctx.fillStyle = "#000";
+    ctx.strokeRect(x * cell, y * cell, cell, cell);
+}
+
+//function that draws food on canvas
+function drawFood(x, y) {
+    //food initial position
+    let food = {
+        x: 1 + Math.floor(Math.random() * (canvasWidth / cell - 2) + 1),
+        y: 1 + Math.floor(Math.random() * (canvasHeight / cell - 2) + 1)
+    }
+    //draw food to canvas
+    ctx.fillStyle = "#fff000";
+    ctx.fillRect(x * cell, y * cell, cell, cell);
+
+    ctx.fillStyle = "#000";
+    ctx.strokeRect(x * cell, y * cell, cell, cell);
+
+    //return {'x': x, 'y': y}
+}
+
+function Color() {
+    //Random colors
+    var r = Math.random() * 255 >> 0;
+    var g = Math.random() * 255 >> 0;
+    var b = Math.random() * 255 >> 0;
+    return "rgba(" + r + ", " + g + ", " + b + ", 0.5)";
 }
