@@ -12,101 +12,82 @@ console.log('server is listening on *: ' + port);
 var socket = require('socket.io');
 var io = socket(server);
 
-const canvasHeight = 520;
-const canvasWidth = 680;
-const cell = 20;
+const canvasHeight = 400;
+const canvasWidth = 400;
+const cell = 10;
 
-var client = [];
-var position = [{ x: 0, y: 0 }, { x: 30, y: 22 }];
+var clients = [];
+var position = [{ x: 0, y: 0 }, { x: 39, y: 39 }];
 
 function newPlayer(pos) {
-    this.name;
-    this.id = 1;
     this.x = position[pos].x;
     this.y = position[pos].y;
     this.color = Color();
-    //create snake
-    drawSnake(this.x, this.y, this.color);
-    return { 'name': this.name, 'x': this.x, 'y': this.y }
+    return { 'name': this.id, 'color': this.color, 'x': this.x, 'y': this.y }
 }
 
 io.sockets.on('connection', function (socket) {
     var pos = 0;
-    var currentPlayer = new newPlayer(pos);
-    clients.push(currentPlayer);
-
+    while (pos < 2) {
+        var currentPlayer = new newPlayer(pos);
+        clients.push(currentPlayer);
+        pos++;
+    }
     socket.broadcast.emit('currentUsers', clients);
     socket.emit('welcome', currentPlayer, clients);
-    //console.log('new connection: ' + socket.id);
+    console.log('new connection: ' + socket.id);
 
     socket.on('disconnect', function () {
-        clients.splice(players.indexOf(currentPlayer), 1);
-        console.log(clients);
+        clients.splice(clients.indexOf(currentPlayer), 1);
+        //console.log(clients);
         socket.broadcast.emit('playerLeft', clients);
     });
 
-    //draw food
-    /* if (clients.length == 2) {
-        socket.broadcast.emit('DisplayFood', drawFood);
+    //send food position object
+    if (clients.length == 2) {
+        //food object
+        food = {
+            foodx: 1 + Math.floor(Math.random() * (canvasWidth / cell - 2) + 1),
+            foody: 1 + Math.floor(Math.random() * (canvasHeight / cell - 2) + 1)
+        }
+        socket.broadcast.emit('DisplayFood', food);
     }
-    else{
-        socket.broadcast.emit('DisplayFood', clients[1].name);
-    } */
+    else {
+        //socket.broadcast.emit('DisplayFood', clients[1].name);
+    }
 
-    socket.on('direction', function (key) {
+    socket.on('FoodEaten', function () {
+        socket.emit('nextFood', food, clients);
+    });
+
+    //listen for direction
+    socket.on('keypressed', function (key) {
         if (key === 38) {
             currentPlayer.y--;
-            socket.emit('SnakesMoving', players);
-            socket.broadcast.emit('SnakesMoving', players);
+            socket.emit('SnakesMoving', currentPlayer, clients);
+            socket.broadcast.emit('SnakesMoving', clients);
         }
         if (key === 40) {
             currentPlayer.y++;
-            socket.emit('SnakesMoving', players);
-            socket.broadcast.emit('SnakesMoving', players);
+            socket.emit('SnakesMoving', currentPlayer, clients);
+            socket.broadcast.emit('SnakesMoving', clients);
         }
         if (key === 37) {
             currentPlayer.x--;
-            socket.emit('SnakesMoving', players);
-            socket.broadcast.emit('SnakesMoving', players);
+            socket.emit('SnakesMoving', currentPlayer, clients);
+            socket.broadcast.emit('SnakesMoving', clients);
         }
         if (key === 39) {
             currentPlayer.x++;
-            socket.emit('SnakesMoving', players);
-            socket.broadcast.emit('SnakesMoving', players);
+            socket.emit('SnakesMoving', currentPlayer, clients);
+            socket.broadcast.emit('SnakesMoving', clients);
         }
     });
 });
 
-//function that draws snake on canvas
-function drawSnake(x, y, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x * cell, y * cell, cell, cell);
-    //border around the snake
-    ctx.fillStyle = "#000";
-    ctx.strokeRect(x * cell, y * cell, cell, cell);
-}
+//food initial position
 
-//function that draws food on canvas
-function drawFood(x, y) {
-    //food initial position
-    let food = {
-        x: 1 + Math.floor(Math.random() * (canvasWidth / cell - 2) + 1),
-        y: 1 + Math.floor(Math.random() * (canvasHeight / cell - 2) + 1)
-    }
-    //draw food to canvas
-    ctx.fillStyle = "#fff000";
-    ctx.fillRect(x * cell, y * cell, cell, cell);
-
-    ctx.fillStyle = "#000";
-    ctx.strokeRect(x * cell, y * cell, cell, cell);
-
-    //return {'x': x, 'y': y}
-}
 
 function Color() {
-    //Random colors
-    var r = Math.random() * 255 >> 0;
-    var g = Math.random() * 255 >> 0;
-    var b = Math.random() * 255 >> 0;
-    return "rgba(" + r + ", " + g + ", " + b + ", 0.5)";
+    return "green" || "blue";
 }
