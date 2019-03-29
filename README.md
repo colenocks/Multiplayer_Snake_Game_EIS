@@ -33,3 +33,11 @@ have established a way to send data back and forth from the server to client(s) 
 have added some UI elements to make it more interactive:
 included logic in button that displays the snake canvas when clicked.
 i have also included a user login form that serves as an entrance for the game area.
+
+Log: 29/03/2019
+have established a complete connection with different users, with each user getting updates from the other users that entered the game.
+thanks to user TrojanHorse {asked Dec 9 '15 at 19:25} from stackoverflow.
+
+after a long and frustrating time figuring it out. 
+next task is to work on movement and food 
+cole Out!
