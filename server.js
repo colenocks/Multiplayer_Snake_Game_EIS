@@ -23,6 +23,7 @@ class newPlayer {
         this.x = Math.floor(Math.random() * (canvasWidth / cell - 1));
         this.y = Math.floor(Math.random() * (canvasHeight / cell - 1));
         this.color = Color();
+<<<<<<< HEAD
         this.speed = 1;
         this.arr = [4, 5, 7];
     }
@@ -35,13 +36,21 @@ let n = new newPlayer();
 n.hi();
 for(var i=0; i< n.arr.length; i++){
     console.log(n.arr[i]);
+=======
+        this.speed = 2;
+        return { 'name': this.id, 'color': this.color, 'speed': this.speed, 'x': this.x, 'y': this.y };
+    }
+>>>>>>> origin/master
 }
 
 /* let s = n.hi();
 console.log(s); */
 io.sockets.on('connection', function (socket) {
     var currentPlayer = new newPlayer();
+<<<<<<< HEAD
     currentPlayer.hi();
+=======
+>>>>>>> origin/master
     console.log(currentPlayer.x + "," + currentPlayer.y);
     players.push(currentPlayer);
 

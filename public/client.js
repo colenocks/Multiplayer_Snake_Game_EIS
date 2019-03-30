@@ -25,6 +25,10 @@ startBtn.onclick = function () {
     // display race arena
     cvs.style.visibility = 'visible';
     //join the game room
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 
     /* let game =  */
 };
@@ -73,6 +77,7 @@ function drawPlayer(player) {
     ctx.fillRect(player.x * cell, player.y * cell, cell, cell);
     ctx.fillStyle = "#000"; //border around the snake
     ctx.strokeRect(player.x * cell, player.y * cell, cell, cell);
+<<<<<<< HEAD
 
     //initialise thisPlayerSnake array
     thisPlayerSnake.push({
@@ -83,6 +88,18 @@ function drawPlayer(player) {
     //register current player snake in arrray  of all players snakes
     allPlayersSnakes.push(thisPlayerSnake);
 
+=======
+
+    //initialise thisPlayerSnake array
+    thisPlayerSnake.push({
+        x: player.x,
+        y: player.y,
+        color: player.color
+    });
+    //register current player snake in arrray  of all players snakes
+    allPlayersSnakes.push(thisPlayerSnake);
+
+>>>>>>> origin/master
     //draw snake
     for (var i = 0; i < thisPlayerSnake.length; i++) {
         ctx.fillStyle = player.color;
@@ -95,13 +112,17 @@ let allPlayersSnakes = [];
 
 socket.on('message', (thisPlayer, allplayers) => {
     ctx.clearRect(0, 0, cvsW, cvsH);
+<<<<<<< HEAD
     let s = thisPlayer.arr[3];
     console.log(s);
+=======
+>>>>>>> origin/master
     console.log('Hello ' + thisPlayer.x);
     //draw all players
     for (var i = 0; i < allplayers.length; i++) {
         //draw current player Snake
         drawPlayer(allplayers[i]);
+<<<<<<< HEAD
 
         //NOTE: allplayerSnakes[i] corresponds to allplayers[i]
         if (thisPlayer == allplayers[i]) {
@@ -120,13 +141,39 @@ socket.on('currentplayers', (allplayers) => {
         //draw each player Snake
         drawPlayer(allplayers[i]);
     }
+=======
+
+        //NOTE: allplayerSnakes[i] corresponds to allplayers[i]
+        if (thisPlayer == allplayers[i]) {
+            console.log(thisPlayer);
+        }
+    }
+    //draw this player
+    drawPlayer(thisPlayer);
+    //setInterval(drawAll, 500);
+});
+
+//update other users canvas with new players when new player joins
+socket.on('currentplayers', (allplayers) => {
+    ctx.clearRect(0, 0, cvsW, cvsH);
+    for (var i = 0; i < allplayers.length; i++) {
+        //draw each player Snake
+        drawPlayer(allplayers[i]);
+    }
+>>>>>>> origin/master
     console.log('A new player just joined');
 });
 
 //if a player leaves, everyone gets new set of players
+<<<<<<< HEAD
 socket.on('playerLeft', function(allplayers){
     ctx.clearRect(0, 0, cvsW, cvsH);
     for(var i = 0; i < allplayers.length; i++){
+=======
+socket.on('playerLeft', function (allplayers) {
+    ctx.clearRect(0, 0, cvsW, cvsH);
+    for (var i = 0; i < allplayers.length; i++) {
+>>>>>>> origin/master
         drawPlayer(allplayers[i]);
     }
     console.log('A Player Has left');
@@ -134,7 +181,11 @@ socket.on('playerLeft', function(allplayers){
 
 //start game
 function drawAll() {
+<<<<<<< HEAD
     ctx.clearRect(0, 0, cvsW, cvsH);
+=======
+    //ctx.clearRect(0, 0, cvsW, cvsH);
+>>>>>>> origin/master
     //receive food position and draw to canvas
     socket.on('DisplayFood', function (food) {
         ctx.fillStyle = "#fff";
