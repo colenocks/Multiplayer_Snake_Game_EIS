@@ -75,7 +75,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
         players.splice(players.indexOf(currentPlayer), 1);
-        console.log(players);
+        console.log('players left: ' + players);
         socket.broadcast.emit('playerLeft', players);
     });
 });

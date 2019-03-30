@@ -1,5 +1,3 @@
-'use strict'
-
 var userform = document.getElementById('user-form');
 var gamefield = document.getElementById('game-field');
 var menu = document.getElementById('menu');
@@ -7,9 +5,6 @@ var loginBtn = document.getElementById('login');
 var joinBtn = document.getElementById('join');
 var startBtn = document.getElementById('start');
 var welcomeDiv = document.getElementById('welcome-div');
-
-
-var cvs = document.getElementById('snake-race');
 
 var socket;
 loginBtn.onclick = function () {
@@ -31,11 +26,11 @@ startBtn.onclick = function () {
     cvs.style.visibility = 'visible';
     //join the game room
 
-
     /* let game =  */
 };
 
 socket = io.connect();
+var cvs = document.getElementById('snake-race');
 const ctx = cvs.getContext("2d");
 const cvsH = cvs.clientHeight;
 const cvsW = cvs.clientWidth;
@@ -149,8 +144,8 @@ function drawAll() {
         var thefood = food;
     });
 
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
+    let snakeX = thisPlayerSnake[0].x;
+    let snakeY = thisPlayerSnake[0].y;
 
     window.addEventListener("keydown", getDirection);
 
@@ -166,7 +161,7 @@ function drawAll() {
     }
     socket.emit('keypressed', position);
 
-    snake.pop();
+    thisPlayerSnake.pop();
     //if snake eats food
     /* if (thisPlayer.x == theFood.x && thisPlayer.y == theFood.y) {
         theFood.x = Math.floor(Math.random() * (cvsW / cell - 1) + 1);
