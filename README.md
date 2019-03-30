@@ -21,7 +21,7 @@ cole, out!
 
 Log: 14/03/2019
 Created the second snake, a different object on the same machine, with a different position and different color.
-with different key codes for control 
+with different key codes for control
 
 Log: 18/03/2019
 just waited till i had substantial content before updated the read me file.
@@ -38,6 +38,10 @@ Log: 29/03/2019
 have established a complete connection with different users, with each user getting updates from the other users that entered the game.
 thanks to user TrojanHorse {asked Dec 9 '15 at 19:25} from stackoverflow.
 
-after a long and frustrating time figuring it out. 
-next task is to work on movement and food 
+after a long and frustrating time figuring it out.
+next task is to work on movement and food
 cole Out!
+
+Log: 29/03/2019
+i have a added functionality for the movement of different instances on the canvas.
+Currently working on distributing food and constraining snakes within the canvas.
