@@ -94,13 +94,28 @@ function drawPlayerSnake(player, snakeArr) {
     ctx.fillStyle = "#000"; //border around the snake
     ctx.strokeRect(player.x * cell, player.y * cell, cell, cell);
   }
+  drawFood(thefood.x, thefood.y);
+}
 
-  socket.on("DisplayFood", food => {
-    if (snakeArr[0].x == food.x && snakeArr[0].y == food.y) {
-      //increase total
-      player.total++;
-    }
-  });
+var thefood = {};
+//draws food only when food object is received
+socket.on("sendfood", function(food) {
+  //ctx.clearRect(0, 0, cvsW, cvsH);
+  //receive food position and draw to canvas
+  thefood = food;
+});
+
+console.log(thefood.x);
+
+//draw food
+function drawFood(posx, posy) {
+  //ctx.clearRect(0, 0, cvsW, cvsH);
+  //draw food to canvas
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(posx * cell, posy * cell, cell, cell);
+  ctx.fillStyle = "#000"; //border around food
+  ctx.strokeRect(posx * cell, posy * cell, cell, cell);
+  //var thefood = food;
 }
 
 function PlayerMoved() {
@@ -111,6 +126,10 @@ function PlayerMoved() {
     drawPlayerSnake(thisPlayer, thisPlayer.snake);
   }
 }
+
+/******************************************
+ ******** GAME STARTS HERE ****************
+ *******************************************/
 
 socket.on("welcome", (thisPlayer, allplayers) => {
   ctx.clearRect(0, 0, cvsW, cvsH);
@@ -142,27 +161,36 @@ socket.on("playerLeft", function(allplayers) {
   for (var i = 0; i < allplayers.length; i++) {
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  console.log("A Player Has left");
+  console.log("A player Has left");
 });
 
-//draw food
-function drawFood(posx, posy) {
-  //ctx.clearRect(0, 0, cvsW, cvsH);
-  //receive food position and draw to canvas
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(posx * cell, posy * cell, cell, cell);
-  ctx.fillStyle = "#000"; //border around food
-  ctx.strokeRect(posx * cell, posy * cell, cell, cell);
-  //var thefood = food;
+function hitTheWall(player) {
+  if (
+    player.x < 0 ||
+    player.x >= cvsW / cell ||
+    player.y < 0 ||
+    player.y >= cvsH / cell
+  ) {
+    console.log("i just hit the wall");
+    //dead.play();
+    //delay snake
+    //setTimeout(moveSnake, 1000 / 2);
+  }
 }
 
-function hitTheWall() {
-  /* if(){
-    
+function eat(player, food) {
+  //check if new position corresponds with food position
+  if (
+    player.snake[player.total - 1].x == food.x &&
+    player.snake[player.total - 1].y == food.y
+  ) {
+    //increase snake length of player
+    player.total++;
+    console.log(player.total);
+    var eaten = true;
+    //inform server to regenerate new food position
+    socket.emit("Isfoodeaten", eaten);
   }
-  else{
-    
-  } */
 }
 
 //setInterval(drawall, 500);
@@ -179,6 +207,10 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //check if snake eats food
+        eat(thisPlayer, thefood);
+        //check if snake hits wall
+        hitTheWall(thisPlayer);
       });
       break;
     case "down":
@@ -191,6 +223,10 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //check if snake eats food
+        eat(thisPlayer, thefood);
+        //check if snake hits wall
+        hitTheWall(thisPlayer);
       });
       break;
     case "left":
@@ -203,6 +239,10 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //check if snake eats food
+        eat(thisPlayer, thefood);
+        //check if snake hits wall
+        hitTheWall(thisPlayer);
       });
       break;
     case "right":
@@ -215,6 +255,10 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //check if snake eats food
+        eat(thisPlayer, thefood);
+        //check if snake hits wall
+        hitTheWall(thisPlayer);
       });
       break;
   }

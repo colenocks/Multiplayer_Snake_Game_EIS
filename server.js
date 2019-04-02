@@ -12,8 +12,8 @@ console.log("server is listening on *: " + port);
 var socket = require("socket.io");
 var io = socket(server);
 
-const canvasHeight = 300;
-const canvasWidth = 500;
+const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
+const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
 const cell = 20;
 
 var players = [];
@@ -34,7 +34,7 @@ class newPlayer {
       //shift positions (forward) to simulate movement
       this.snake[i] = this.snake[i + 1];
     }
-    if (this.total >= 1) {
+    if (this.total > 0) {
       //set new position coordinates
       this.snake[this.total - 1] = {
         x: this.x,
@@ -42,26 +42,19 @@ class newPlayer {
       };
     }
   }
-  //when snake eats food
-  eat(posx, posy) {
-    if (this.x == posx && this.y == posy) {
-      //increase total
-      this.total++;
-    }
-  }
 }
 
 function makeFood(players) {
-  x = Math.floor(Math.random() * (canvasWidth / cell - 1));
-  y = Math.floor(Math.random() * (canvasHeight / cell - 1));
+  this.x = Math.floor(Math.random() * (canvasWidth / cell - 1));
+  this.y = Math.floor(Math.random() * (canvasHeight / cell - 1));
 
   for (var i = 0; i < players.length; i++) {
     //check each players snake head
-    if (players[i].snake[0].x == x && players[i].snake[0].y == y) {
+    if (players[i].x == this.x && players[i].y == this.y) {
       makeFood(players);
     }
   }
-  return { x: x, y: y };
+  return { x: this.x, y: this.y };
 }
 
 io.sockets.on("connection", function(socket) {
@@ -73,44 +66,56 @@ io.sockets.on("connection", function(socket) {
   socket.emit("welcome", currentPlayer, players);
   console.log("new connection: " + socket.id);
 
-  if (players.length == 2) {
-    //generate food on canvas only when users are 2
-    var newfood = new makeFood(players);
-    socket.broadcast.emit("DisplayFood", newfood);
-  }
-  //else {
-  //socket.broadcast.emit('DisplayFood', players[1].name);
+  //if (players.length == 2) {
+  //generate food on canvas only when users are 2
+  //socket.on("", data => {
+  var newfood = new makeFood(players);
+  console.log(newfood.x);
+  socket.emit("sendfood", newfood);
+  //});
   //}
 
-  /* socket.on('FoodEaten', function () {
-        socket.emit('nextFood', food, players);
-    }); */
+  socket.on("Isfoodeaten", function(data) {
+    if (data) {
+      var anotherfood = new makeFood(players);
+      //send a new food location
+      socket.emit("sendfood", anotherfood);
+    }
+  });
 
   socket.on("keypressed", function(key) {
-    if (key === 38 && key !== 40) {
+    if (key === 38 && key != 40) {
       //up
+      //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
       currentPlayer.y -= currentPlayer.speed;
+      //}
       currentPlayer.update();
       socket.emit("movement", currentPlayer, players);
       socket.broadcast.emit("movement", currentPlayer, players);
     }
-    if (key === 40 && key !== 38) {
+    if (key === 40 && key != 38) {
       //down
+      //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
       currentPlayer.y += currentPlayer.speed;
+      //}
       currentPlayer.update();
       socket.emit("movement", currentPlayer, players);
       socket.broadcast.emit("movement", currentPlayer, players);
     }
-    if (key === 37 && key !== 39) {
+    if (key === 37 && key != 39) {
       //left
+      //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
       currentPlayer.x -= currentPlayer.speed;
+      //}
       currentPlayer.update();
       socket.emit("movement", currentPlayer, players);
       socket.broadcast.emit("movement", currentPlayer, players);
     }
-    if (key === 39 && key !== 38) {
+    if (key === 39 && key != 37) {
       //right
+      //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
       currentPlayer.x += currentPlayer.speed;
+      //}
       currentPlayer.update();
       socket.emit("movement", currentPlayer, players);
       socket.broadcast.emit("movement", currentPlayer, players);
