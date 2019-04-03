@@ -98,14 +98,14 @@ function drawPlayerSnake(player, snakeArr) {
 }
 
 var thefood = {};
+//function receiveFood() {
 //draws food only when food object is received
 socket.on("sendfood", function(food) {
-  //ctx.clearRect(0, 0, cvsW, cvsH);
   //receive food position and draw to canvas
   thefood = food;
 });
-
-console.log(thefood.x);
+//}
+console.log(thefood.x + ", " + thefood.y);
 
 //draw food
 function drawFood(posx, posy) {
@@ -118,12 +118,17 @@ function drawFood(posx, posy) {
   //var thefood = food;
 }
 
-function PlayerMoved() {
-  //draw all player snakes on updated positions
-  ctx.clearRect(0, 0, cvsW, cvsH);
-  //draw all players
-  for (var i = 0; i < allplayers.length; i++) {
-    drawPlayerSnake(thisPlayer, thisPlayer.snake);
+function hitTheWall(player) {
+  if (
+    player.x < 0 ||
+    player.x >= cvsW / cell ||
+    player.y < 0 ||
+    player.y >= cvsH / cell
+  ) {
+    //console.log("i just hit the wall");
+    //dead.play();
+    //delay snake
+    //setTimeout(moveSnake, 1000 / 2);
   }
 }
 
@@ -133,12 +138,12 @@ function PlayerMoved() {
 
 socket.on("welcome", (thisPlayer, allplayers) => {
   ctx.clearRect(0, 0, cvsW, cvsH);
+
   console.log("Hello " + thisPlayer.x);
   //draw all players
   for (var i = 0; i < allplayers.length; i++) {
     //draw current player Snake
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
-    console.log(thisPlayer);
   }
   //draw this player
   drawPlayerSnake(thisPlayer, thisPlayer.snake);
@@ -164,35 +169,6 @@ socket.on("playerLeft", function(allplayers) {
   console.log("A player Has left");
 });
 
-function hitTheWall(player) {
-  if (
-    player.x < 0 ||
-    player.x >= cvsW / cell ||
-    player.y < 0 ||
-    player.y >= cvsH / cell
-  ) {
-    console.log("i just hit the wall");
-    //dead.play();
-    //delay snake
-    //setTimeout(moveSnake, 1000 / 2);
-  }
-}
-
-function eat(player, food) {
-  //check if new position corresponds with food position
-  if (
-    player.snake[player.total - 1].x == food.x &&
-    player.snake[player.total - 1].y == food.y
-  ) {
-    //increase snake length of player
-    player.total++;
-    console.log(player.total);
-    var eaten = true;
-    //inform server to regenerate new food position
-    socket.emit("Isfoodeaten", eaten);
-  }
-}
-
 //setInterval(drawall, 500);
 
 function moveSnake() {
@@ -208,7 +184,7 @@ function moveSnake() {
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake eats food
-        eat(thisPlayer, thefood);
+        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -224,7 +200,7 @@ function moveSnake() {
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake eats food
-        eat(thisPlayer, thefood);
+        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -240,7 +216,7 @@ function moveSnake() {
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake eats food
-        eat(thisPlayer, thefood);
+        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -256,7 +232,7 @@ function moveSnake() {
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake eats food
-        eat(thisPlayer, thefood);
+        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -264,4 +240,4 @@ function moveSnake() {
   }
 }
 
-setInterval(moveSnake, 1000);
+setInterval(moveSnake, 500);
