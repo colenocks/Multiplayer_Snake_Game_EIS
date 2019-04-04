@@ -30,17 +30,17 @@ class newPlayer {
   }
   //when snake moves
   update() {
-    for (var i = 0; i < this.total - 1; i++) {
-      //shift positions (forward) to simulate movement
-      this.snake[i] = this.snake[i + 1];
+    if (this.total === this.snake.length) {
+      for (var i = 0; i < this.snake.length; i++) {
+        //shift positions (forward) to simulate movement
+        this.snake[i] = this.snake[i + 1];
+      }
     }
-    if (this.total > 0) {
-      //set new position coordinates
-      this.snake[this.total - 1] = {
-        x: this.x,
-        y: this.y
-      };
-    }
+    //set new position coordinates
+    this.snake[this.total - 1] = {
+      x: this.x,
+      y: this.y
+    };
   }
 
   eatTheFood(food) {
@@ -79,11 +79,14 @@ io.sockets.on("connection", function(socket) {
   function sendTheFood() {
     newfood = makeFood(players);
     console.log(newfood.x);
-    socket.broadcast.emit("sendfood", newfood);
-    socket.emit("sendfood", newfood);
+    io.emit("sendfood", newfood);
+    //socket.broadcast.emit("sendfood", newfood);
   }
-
   sendTheFood();
+
+  /* if (players.length == 2) {
+    sendTheFood();
+  } */
 
   socket.on("keypressed", function(key) {
     if (key === 38 && key != 40) {

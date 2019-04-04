@@ -81,7 +81,7 @@ document.onkeydown = function(event) {
 //draw player function
 function drawPlayerSnake(player, snakeArr) {
   //check for movement
-  if (snakeArr.length >= 1) {
+  if (snakeArr.length > 1) {
     for (var i = 0; i < snakeArr.length; i++) {
       ctx.fillStyle = player.color;
       ctx.fillRect(snakeArr[i].x * cell, snakeArr[i].y * cell, cell, cell);
@@ -98,24 +98,14 @@ function drawPlayerSnake(player, snakeArr) {
 }
 
 var thefood = {};
-//function receiveFood() {
-//draws food only when food object is received
-socket.on("sendfood", function(food) {
-  //receive food position and draw to canvas
-  thefood = food;
-});
-//}
-console.log(thefood.x + ", " + thefood.y);
 
 //draw food
 function drawFood(posx, posy) {
-  //ctx.clearRect(0, 0, cvsW, cvsH);
   //draw food to canvas
   ctx.fillStyle = "#fff";
   ctx.fillRect(posx * cell, posy * cell, cell, cell);
   ctx.fillStyle = "#000"; //border around food
   ctx.strokeRect(posx * cell, posy * cell, cell, cell);
-  //var thefood = food;
 }
 
 function hitTheWall(player) {
@@ -148,6 +138,11 @@ socket.on("welcome", (thisPlayer, allplayers) => {
   //draw this player
   drawPlayerSnake(thisPlayer, thisPlayer.snake);
   //setInterval(drawAll, 500);
+
+  socket.on("sendfood", function(food) {
+    //receive food position and draw to canvas
+    thefood = food;
+  });
 });
 
 //update other users canvas with new players when new player joins
@@ -175,6 +170,7 @@ function moveSnake() {
   switch (direction) {
     case "up":
       socket.emit("keypressed", 38);
+      //server provides updated player coordinates
       socket.on("movement", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
@@ -183,14 +179,13 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake eats food
-        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
       break;
     case "down":
       socket.emit("keypressed", 40);
+      //server provides updated player coordinates
       socket.on("movement", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
@@ -199,14 +194,13 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake eats food
-        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
       break;
     case "left":
       socket.emit("keypressed", 37);
+      //server provides updated player coordinates
       socket.on("movement", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
@@ -215,14 +209,13 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake eats food
-        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
       break;
     case "right":
       socket.emit("keypressed", 39);
+      //server provides updated player coordinates
       socket.on("movement", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
@@ -231,8 +224,6 @@ function moveSnake() {
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake eats food
-        //eat(thisPlayer, thefood);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
