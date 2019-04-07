@@ -45,3 +45,8 @@ cole Out!
 Log: 29/03/2019
 i have a added functionality for the movement of different instances on the canvas.
 Currently working on distributing food and constraining snakes within the canvas.
+
+Log: 04/04/2019
+food object is broadcasted to all players at the same spot as opposed to different spots for different users before.
+
+both snake eat the same food and adds to its length.
