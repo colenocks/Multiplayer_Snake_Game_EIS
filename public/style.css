@@ -21,9 +21,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center; */
-  background: #608da7;
+  /* background: #608da7; 
   background-size: cover;
-  background-attachment: fixed;
+  background-attachment: fixed;*/
   height: 100%;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   text-align: center;
@@ -40,9 +40,23 @@ header {
   background-color: #333;
   color: #fff;
 }
-
 header h4 {
   margin-left: 20px;
+}
+
+#login-form {
+  border-radius: 10px;
+  background: #dbdada;
+  padding: 20px;
+  margin: 0 auto;
+  width: 80%;
+  position: absolute;
+  top: 15vh;
+  left: 10%;
+  z-index: 3;
+}
+#login-form button {
+  margin-top: 10px;
 }
 
 #menu {
@@ -59,50 +73,38 @@ header h4 {
   margin-bottom: 7px;
   color: #ffffff;
 }
-
 #menu ul li input {
   width: 90%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
-
 .menu li:hover {
   background-color: #0099cc;
 }
 
-#user-form {
-  border-radius: 10px;
-  background: #dbdada;
-  padding: 20px;
-  margin: 0 auto;
-  width: 80%;
-  position: absolute;
-  top: 15vh;
-  left: 10%;
-  z-index: 3;
+#users-area {
+  visibility: hidden;
+}
+#logout {
+  position: relative;
+  bottom: 40vh;
+}
+.users-area li:hover {
+  background-color: #0099cc;
 }
 
-#user-form button {
-  margin-top: 10px;
-}
 #welcome-div {
   float: left;
 }
 #game-field {
   visibility: hidden;
 }
-/* #score-board {
-  visibility: hidden;
-  background-color: #333;
-  border: 2px solid black;
-  margin-bottom: 3px;
-} */
 
 #snake-race {
   visibility: hidden;
   background-color: black;
   border: 2px solid #252525;
 }
-
+/* 
 .scorediv {
   display: flex;
   align-items: center;
@@ -115,7 +117,7 @@ header h4 {
   height: 50px;
   padding: 10px;
   z-index: 4;
-}
+} */
 
 footer {
   padding: 5px;
