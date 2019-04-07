@@ -1,11 +1,22 @@
 "use strict";
 var express = require("express");
+//var bodyParser = require("body-parser");
 
 var app = express();
 var port = process.env.PORT || 3000;
 var server = app.listen(3000);
-
+//app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+/* app.get('/', function(req, res){
+  res.sendFile(__dirname+ '/index.html')
+}) */
+
+/* app.post("/snakerace", function(req, res) {
+  if (!req.body) return res.sendStatus(400);
+  console.log(req.body);
+  //res.send('<div class="well">Welcome ' + req.body.playername + "</div>");
+  res.sendFile(__dirname + "/public/snakerace.html");
+}); */
 
 console.log("server is listening on *: " + port);
 
@@ -14,7 +25,7 @@ var io = socket(server);
 
 const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
 const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
-const cell = 15;
+const cell = 20;
 
 var players = [];
 
@@ -22,8 +33,8 @@ class newPlayer {
   constructor() {
     this.id;
     this.name;
-    this.x = Math.floor(Math.random() * (canvasWidth / cell - 1));
-    this.y = Math.floor(Math.random() * (canvasHeight / cell - 1));
+    this.x; //Math.floor(Math.random() * (canvasWidth / cell - 1));
+    this.y; //Math.floor(Math.random() * (canvasHeight / cell - 1));
     this.color;
     this.speed = 1;
     this.snake = [];
@@ -63,8 +74,8 @@ function setPlayerPosition(players) {
         players[index].y = 0;
         break;
       case 1:
-        players[index].x = canvasWidth - 1;
-        players[index].y = canvasHeight - 1;
+        players[index].x = canvasWidth / cell - 1;
+        players[index].y = canvasHeight / cell - 1;
         break;
       default:
     }
@@ -115,25 +126,23 @@ function setScorePosition(players) {
 
 io.sockets.on("connection", function(socket) {
   let currentPlayer = new newPlayer();
-  let currentName;
   //receive name from client
   socket.on("playername", name => {
-    currentName = name;
-    console.log(name);
+    currentPlayer.name = name; //set player id and name
   });
 
-  currentPlayer.id = socket.id; //set player id and name
-  currentPlayer.name = currentName;
+  console.log(currentPlayer.name);
+  currentPlayer.id = socket.id;
   players.push(currentPlayer);
 
   setPlayerColor(players); //set player color
   setPlayerPosition(players); //set player starting position
   setScorePosition(players); //set the score position
 
-  socket.broadcast.emit("scores", players); //send all players scores
+  //socket.emit("playerlist", players);
   socket.broadcast.emit("currentplayers", players);
   socket.emit("welcome", currentPlayer, players);
-  console.log("new connection: " + currentPlayer.name);
+  console.log("new connection: " + currentPlayer.id);
   console.log(currentPlayer.x + "," + currentPlayer.y);
   //if (players.length == 2) {
   //generate food on canvas only when users are 2
@@ -141,7 +150,7 @@ io.sockets.on("connection", function(socket) {
   var newfood;
   function sendTheFood() {
     newfood = makeFood(players);
-    console.log(newfood.x);
+    //console.log(newfood.x);
     io.emit("sendfood", newfood); //everyone sees the food
   }
 

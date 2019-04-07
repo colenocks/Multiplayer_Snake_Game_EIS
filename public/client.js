@@ -1,23 +1,25 @@
 let userform = document.getElementById("user-form");
+let loginform = document.getElementById("login-form");
 let gamefield = document.getElementById("game-field");
 let menu = document.getElementById("menu");
+let users = document.getElementById("users-area");
+let playersList = document.getElementById("players-list");
 let loginBtn = document.getElementById("login");
+let logoutBtn = document.getElementById("logout");
 let joinBtn = document.getElementById("join");
 let startBtn = document.getElementById("start");
 let welcomeDiv = document.getElementById("welcome-div");
-let playername = document.getElementById("player-name");
+let playername = document.getElementById("playername");
 
-let socket;
-let playerName;
-loginBtn.onclick = function() {
+let socket = io.connect();
+
+userform.onsubmit = function(e) {
+  e.preventDefault();
   if (playername.value != "") {
-    // display gamefield
-    gamefield.style.visibility = "visible";
+    gamefield.style.visibility = "visible"; // display gamefield
     menu.style.visibility = "visible";
-    // append username to array of activePlayers
-    playerName = playername.value;
-    // set userform display to none
-    userform.style.display = "none";
+    socket.emit("playername", playername.value); // send username across to server
+    loginform.style.display = "none"; // set userform display to none
     startBtn.disabled = true;
   } else {
     alert("Enter a valid name");
@@ -30,39 +32,35 @@ joinBtn.onclick = function() {
 };
 
 startBtn.onclick = function() {
-  //clear the menu div and welcome message
-  welcomeDiv.style.display = "none";
-  menu.style.visibility = "hidden";
+  welcomeDiv.style.display = "none"; //clear the menu div and welcome message
+  menu.style.display = "none";
+  users.style.visibility = "visible";
 
-  // display race arena
-  cvs.style.visibility = "visible";
+  cvs.style.visibility = "visible"; // display race arena
   startBtn.disabled = true;
   //join the game room
 };
-socket = io.connect();
+
 let cvs = document.getElementById("snake-race");
 const ctx = cvs.getContext("2d");
 const cvsH = cvs.clientHeight;
 const cvsW = cvs.clientWidth;
-const cell = 15;
-
-//send player name to server
-console.log(playerName);
-socket.emit("playername", playerName);
+const cell = 20;
 
 let direction;
 
-socket.on("scores", allplayers => {
+function addPlayersToList(allplyers) {
   for (let index = 0; index < allplayers.length; index++) {
-    let node = document.createElement("div");
-    node.classList.add("scorediv");
-    let text = `PLAYER ${index + 1}: ${allplayers[index].name}`;
-    node.style.color = allplayers[index].color;
-    let textnode = document.createTextNode(text);
-    node.appendChild(textnode);
-    gamefield.appendChild(node);
+    let list = document.createElement("li");
+    list.classList.add("well");
+    let username = `PLAYER ${index + 1}: ${allplayers[index].name}`;
+    list.style.color = allplayers[index].color;
+    let textnode = document.createTextNode(username);
+    list.appendChild(textnode);
+    //check if node exists already
+    playersList.appendChild(list);
   }
-});
+}
 
 document.onkeydown = function(event) {
   let keyCode;
@@ -123,7 +121,7 @@ function drawFood(posx, posy) {
 
 //draw score
 function drawScore(player) {
-  ctx.fillStyle = "#333";
+  ctx.fillStyle = "#fff";
   ctx.font = "30px Georgia";
   ctx.fillText(player.score, player.scorePos.x, player.scorePos.y);
 }
@@ -162,6 +160,7 @@ socket.on("welcome", (thisPlayer, allplayers) => {
   //draw this player
   //drawPlayerSnake(thisPlayer, thisPlayer.snake);
   //setInterval(drawAll, 500);
+  addPlayersToList(allplayers);
 });
 
 //update other users canvas with new players when new player joins
@@ -180,6 +179,7 @@ socket.on("playerLeft", function(allplayers) {
   for (let i = 0; i < allplayers.length; i++) {
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
+  addPlayersToList(allplayers);
   console.log("A player Has left");
 });
 
@@ -250,4 +250,4 @@ function moveSnake() {
   }
 }
 
-setInterval(moveSnake, 700);
+setInterval(moveSnake, 1000 / 100);
