@@ -47,7 +47,7 @@ const cvsH = cvs.clientHeight;
 const cvsW = cvs.clientWidth;
 const cell = 20;
 
-let direction = "right";
+let direction;
 
 document.onkeydown = function(event) {
   var keyCode;
@@ -56,25 +56,14 @@ document.onkeydown = function(event) {
   } else {
     keyCode = event.keyCode;
   }
-  switch (keyCode) {
-    // left
-    case 37:
-      direction = "left";
-      break;
-    // up
-    case 38:
-      direction = "up";
-      break;
-    // right
-    case 39:
-      direction = "right";
-      break;
-    // down
-    case 40:
-      direction = "down";
-      break;
-    default:
-      break;
+  if (keyCode == 37 && direction != "right") {
+    direction = "left";
+  } else if (keyCode == 38 && direction != "down") {
+    direction = "up";
+  } else if (keyCode == 39 && direction != "left") {
+    direction = "right";
+  } else if (keyCode == 40 && direction != "up") {
+    direction = "down";
   }
 };
 
@@ -106,6 +95,11 @@ function drawFood(posx, posy) {
   ctx.fillRect(posx * cell, posy * cell, cell, cell);
   ctx.fillStyle = "#000"; //border around food
   ctx.strokeRect(posx * cell, posy * cell, cell, cell);
+
+  //this stops the food from blinking
+  /* requestAnimationFrame(function() {
+    drawFood(posx, posy);
+  }); */
 }
 
 function hitTheWall(player) {
@@ -115,7 +109,7 @@ function hitTheWall(player) {
     player.y < 0 ||
     player.y >= cvsH / cell
   ) {
-    //console.log("i just hit the wall");
+    console.log("i just hit the wall");
     //dead.play();
     //delay snake
     //setTimeout(moveSnake, 1000 / 2);
@@ -135,14 +129,13 @@ socket.on("welcome", (thisPlayer, allplayers) => {
     //draw current player Snake
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  //draw this player
-  drawPlayerSnake(thisPlayer, thisPlayer.snake);
-  //setInterval(drawAll, 500);
-
   socket.on("sendfood", function(food) {
     //receive food position and draw to canvas
     thefood = food;
   });
+  //draw this player
+  //drawPlayerSnake(thisPlayer, thisPlayer.snake);
+  //setInterval(drawAll, 500);
 });
 
 //update other users canvas with new players when new player joins
@@ -178,7 +171,7 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -191,7 +184,7 @@ function moveSnake() {
         ctx.clearRect(0, 0, cvsW, cvsH);
         for (var i = 0; i < allplayers.length; i++) {
           //update all snakes on canvas
-          drawPlayerSnake(allplayers[i], allplayers[i].snake);
+          // drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
@@ -208,7 +201,7 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -223,7 +216,7 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        // drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
         hitTheWall(thisPlayer);
       });
@@ -231,4 +224,4 @@ function moveSnake() {
   }
 }
 
-setInterval(moveSnake, 500);
+setInterval(moveSnake, 700);
