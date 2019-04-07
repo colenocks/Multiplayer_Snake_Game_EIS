@@ -14,7 +14,7 @@ var io = socket(server);
 
 const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
 const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
-const cell = 20;
+const cell = 15;
 
 var players = [];
 
@@ -24,19 +24,15 @@ class newPlayer {
     this.name;
     this.x = Math.floor(Math.random() * (canvasWidth / cell - 1));
     this.y = Math.floor(Math.random() * (canvasHeight / cell - 1));
-    this.color = Color();
+    this.color;
     this.speed = 1;
     this.snake = [];
+    this.score = 0;
+    this.scorePos = {};
     this.newLength = false;
   }
   //when snake moves
   update() {
-    //if (this.total === this.snake.length) {
-    //for (var i = 0; i < this.snake.length; i++) {
-    //shift positions (forward) to simulate movement
-    //this.snake[i] = this.snake[i + 1];
-    //}
-    //}
     if (this.newLength === false) {
       this.snake.pop(); //pop only when snake eats food
     }
@@ -54,9 +50,39 @@ class newPlayer {
 //generalizing the eatTheFood function
 function eatTheFood(player, food) {
   if (player.x == food.x && player.y == food.y) {
-    //this.total = this.total + 1;
+    player.score = player.score + 1;
     player.newLength = true;
     return true;
+  }
+}
+function setPlayerPosition(players) {
+  for (let index = 0; index < players.length; index++) {
+    switch (index) {
+      case 0:
+        players[index].x = 0;
+        players[index].y = 0;
+        break;
+      case 1:
+        players[index].x = canvasWidth - 1;
+        players[index].y = canvasHeight - 1;
+        break;
+      default:
+    }
+  }
+}
+
+function setPlayerColor(players) {
+  for (let index = 0; index < players.length; index++) {
+    switch (index) {
+      case 0:
+        players[index].color = "blue";
+        break;
+      case 1:
+        players[index].color = "green";
+        break;
+      default:
+        players[index].color = "red";
+    }
   }
 }
 
@@ -73,29 +99,50 @@ function makeFood(players) {
   return { x: x, y: y };
 }
 
+function setScorePosition(players) {
+  for (let index = 0; index < players.length; index++) {
+    switch (index) {
+      case 0:
+        players[index].scorePos = { x: 5, y: canvasHeight - 5 };
+        break;
+      case 1:
+        players[index].scorePos = { x: canvasWidth - 30, y: canvasHeight - 5 };
+        break;
+      default:
+    }
+  }
+}
+
 io.sockets.on("connection", function(socket) {
-  var currentPlayer = new newPlayer();
-  //set player id
-  currentPlayer.id = socket.id;
+  let currentPlayer = new newPlayer();
+  let currentName;
+  //receive name from client
+  socket.on("playername", name => {
+    currentName = name;
+    console.log(name);
+  });
+
+  currentPlayer.id = socket.id; //set player id and name
+  currentPlayer.name = currentName;
   players.push(currentPlayer);
 
+  setPlayerColor(players); //set player color
+  setPlayerPosition(players); //set player starting position
+  setScorePosition(players); //set the score position
+
+  socket.broadcast.emit("scores", players); //send all players scores
   socket.broadcast.emit("currentplayers", players);
   socket.emit("welcome", currentPlayer, players);
-  console.log("new connection: " + socket.id);
+  console.log("new connection: " + currentPlayer.name);
   console.log(currentPlayer.x + "," + currentPlayer.y);
   //if (players.length == 2) {
   //generate food on canvas only when users are 2
   //socket.on("", data => {
   var newfood;
-
   function sendTheFood() {
     newfood = makeFood(players);
     console.log(newfood.x);
-
-    //everyone sees the food
-    io.emit("sendfood", newfood);
-
-    //socket.broadcast.emit("sendfood", newfood);
+    io.emit("sendfood", newfood); //everyone sees the food
   }
 
   sendTheFood();
@@ -174,7 +221,3 @@ io.sockets.on("connection", function(socket) {
     socket.emit("playerLeft", players);
   });
 });
-
-function Color() {
-  return "blue";
-}
