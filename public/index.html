@@ -6,43 +6,33 @@
     <title>Multiplayer Snake Race</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-      crossorigin="anonymous"
-    />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
     <link type="text/css" rel="stylesheet" href="style.css" />
-
-    <!-- <script src="http://code.jquery.com/jquery-latest.min.js"></script> -->
-  </head>
-
   <body>
     <header id="heading">
-      <h4>Snake Race 1.0</h4>
+      <div id="logo"><img src="../img/food.png"></div>
+      <h2>SNAKE RACE</h2>
     </header>
-    <div class="container-fluid">
-      <div class="row" id="login-form">
-        <div class="col-3 col-s-3"></div>
-        <div class="col-6 col-s-9">
+    <div class="container">
+      <div class="row" id="login-div">
+        <div class="col-12 col-s-12">
           <form id="user-form">
             <div class="form-group">
               <label>Welcome, Player</label>
               <input type="text" class="form-control" id="playername"
                 placeholder="Enter Your Name" />
-              <button type="submit" id="login" class="btn btn-primary">
+              <button type="submit" id="login" class="btn btn-primary btn-md">
                 Login
               </button>
             </div>
           </form>
         </div>
-        <div class="col-3 col-s-3"></div>
       </div>
       <div class="container-fluid">
           <div class="row">
-            <div class="col-3 col-s-12">
+            <div class="col-3 col-s-6">
               <!-- Menu Area -->
-              <div id="menu">
+              <div id="menu-area">
                 <ul>
                   <li>
                     <input
@@ -63,11 +53,12 @@
                 </ul>
               </div>
               <!-- Users Area -->
-              <div id="users-area" class="well">
-                <h3>Player List</h3>
-                <ul class="list-group" id="players-list"></ul>
-                <input id="logout" class="btn btn-danger btn-lg" type="button" value="Log Out">
+              <div id="users-area">
+                <h4 class="well">Active Players</h4>
+                <div id="players-list" class="well"><!-- Dynamic content here --></div>
+                <button id="logout" class="btn btn-info btn-lg">Log Out</button>
               </div>
+              
             </div>
             <div class="col-6 col-s-9">
               <div id="game-field">
@@ -82,11 +73,16 @@
                 </canvas>
               </div>
             </div>
-            <div class="col-3 col-s-12"></div>
+            <div class="col-3 col-s-12">
+                
+            </div>
           </div>
         </div>
     <footer>Created by Icardi</footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>  
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>     
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
+    
   </body>
 </html>

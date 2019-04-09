@@ -33,8 +33,8 @@ class newPlayer {
   constructor() {
     this.id;
     this.name;
-    this.x; //Math.floor(Math.random() * (canvasWidth / cell - 1));
-    this.y; //Math.floor(Math.random() * (canvasHeight / cell - 1));
+    this.x = Math.floor(Math.random() * (canvasWidth / cell - 1));
+    this.y = Math.floor(Math.random() * (canvasHeight / cell - 1));
     this.color;
     this.speed = 1;
     this.snake = [];
@@ -97,14 +97,14 @@ function setPlayerColor(players) {
   }
 }
 
-function makeFood(players) {
+function createFood(players) {
   var x = Math.floor(Math.random() * (canvasWidth / cell - 1));
   var y = Math.floor(Math.random() * (canvasHeight / cell - 1));
 
   for (var i = 0; i < players.length; i++) {
     //check each players snake head
     if (players[i].x == x && players[i].y == y) {
-      makeFood(players);
+      createFood(players);
     }
   }
   return { x: x, y: y };
@@ -127,37 +127,44 @@ function setScorePosition(players) {
 io.sockets.on("connection", function(socket) {
   let currentPlayer = new newPlayer();
   //receive name from client
-  socket.on("playername", name => {
-    currentPlayer.name = name; //set player id and name
+  socket.on("player name", name => {
+    currentPlayer.name = name;
+    currentPlayer.id = socket.id; //set player id and name
+
+    players.push(currentPlayer);
+    // setPlayerPosition(players); //set player starting position
+    setPlayerColor(players); //set player color
+    setScorePosition(players); //set the score position
+
+    io.emit("add player", players);
+    console.log(currentPlayer.name);
+
+    socket.broadcast.emit("update players", players);
+    socket.emit("welcome", currentPlayer, players);
+    console.log("new connection: " + currentPlayer.name);
+    console.log(currentPlayer.x + "," + currentPlayer.y);
+    //if (players.length == 2) {
+    //generate food on canvas only when users are 2
+    //socket.on("", data => {
+    broadcastFood();
   });
 
-  console.log(currentPlayer.name);
-  currentPlayer.id = socket.id;
-  players.push(currentPlayer);
-
-  setPlayerColor(players); //set player color
-  setPlayerPosition(players); //set player starting position
-  setScorePosition(players); //set the score position
-
-  //socket.emit("playerlist", players);
-  socket.broadcast.emit("currentplayers", players);
-  socket.emit("welcome", currentPlayer, players);
-  console.log("new connection: " + currentPlayer.id);
-  console.log(currentPlayer.x + "," + currentPlayer.y);
-  //if (players.length == 2) {
-  //generate food on canvas only when users are 2
-  //socket.on("", data => {
   var newfood;
-  function sendTheFood() {
-    newfood = makeFood(players);
-    //console.log(newfood.x);
-    io.emit("sendfood", newfood); //everyone sees the food
+  function broadcastFood() {
+    if (players.length == 2) {
+      newfood = createFood(players);
+      io.emit("send food", newfood); //everyone sees the food
+    } else {
+      newfood = {
+        x: -7,
+        y: -50
+      };
+      io.emit("send food", newfood); //take the food away from the canvas
+    }
   }
 
-  sendTheFood();
-
   /* if (players.length == 2) {
-    sendTheFood();
+     broadcastFood();
   } */
 
   socket.on("keypressed", function(key) {
@@ -170,11 +177,11 @@ io.sockets.on("connection", function(socket) {
       //check if food eaten
       for (var i = 0; i < players.length; i++) {
         if (eatTheFood(players[i], newfood)) {
-          sendTheFood();
+          broadcastFood();
         }
       }
-      socket.emit("movement", currentPlayer, players);
-      socket.broadcast.emit("movement", currentPlayer, players);
+      socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players);
     }
     if (key == 40) {
       //down
@@ -185,11 +192,11 @@ io.sockets.on("connection", function(socket) {
       //check if food eaten
       for (var i = 0; i < players.length; i++) {
         if (eatTheFood(players[i], newfood)) {
-          sendTheFood();
+          broadcastFood();
         }
       }
-      socket.emit("movement", currentPlayer, players);
-      socket.broadcast.emit("movement", currentPlayer, players);
+      socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players);
     }
     if (key == 37) {
       //left
@@ -200,11 +207,11 @@ io.sockets.on("connection", function(socket) {
       //check if food eaten
       for (var i = 0; i < players.length; i++) {
         if (eatTheFood(players[i], newfood)) {
-          sendTheFood();
+          broadcastFood();
         }
       }
-      socket.emit("movement", currentPlayer, players);
-      socket.broadcast.emit("movement", currentPlayer, players);
+      socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players);
     }
     if (key == 39) {
       //right
@@ -215,18 +222,19 @@ io.sockets.on("connection", function(socket) {
       //check if food eaten
       for (var i = 0; i < players.length; i++) {
         if (eatTheFood(players[i], newfood)) {
-          sendTheFood();
+          broadcastFood();
         }
       }
-      socket.emit("movement", currentPlayer, players);
-      socket.broadcast.emit("movement", currentPlayer, players);
+      socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players);
     }
   });
 
   socket.on("disconnect", function() {
     players.splice(players.indexOf(currentPlayer), 1);
-    console.log(currentPlayer.id + " just left: ");
-    socket.broadcast.emit("playerLeft", players);
-    socket.emit("playerLeft", players);
+    console.log(currentPlayer.name + " just left: ");
+    io.emit("add player", players);
+    socket.broadcast.emit("player left", players);
+    socket.emit("player left", players);
   });
 });

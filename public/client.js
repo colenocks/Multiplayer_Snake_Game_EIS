@@ -1,14 +1,17 @@
+let logindiv = document.getElementById("login-div");
 let userform = document.getElementById("user-form");
-let loginform = document.getElementById("login-form");
-let gamefield = document.getElementById("game-field");
-let menu = document.getElementById("menu");
+
+let menu = document.getElementById("menu-area");
 let users = document.getElementById("users-area");
+let gamefield = document.getElementById("game-field");
+let welcomediv = document.getElementById("welcome-div");
+const cvs = document.getElementById("snake-race");
+
 let playersList = document.getElementById("players-list");
-let loginBtn = document.getElementById("login");
-let logoutBtn = document.getElementById("logout");
-let joinBtn = document.getElementById("join");
-let startBtn = document.getElementById("start");
-let welcomeDiv = document.getElementById("welcome-div");
+let loginbtn = document.getElementById("login");
+let logoutbtn = document.getElementById("logout");
+let joinbtn = document.getElementById("join");
+let startbtn = document.getElementById("start");
 let playername = document.getElementById("playername");
 
 let socket = io.connect();
@@ -16,32 +19,32 @@ let socket = io.connect();
 userform.onsubmit = function(e) {
   e.preventDefault();
   if (playername.value != "") {
-    gamefield.style.visibility = "visible"; // display gamefield
+    socket.emit("player name", playername.value); // send username across to server
+
     menu.style.visibility = "visible";
-    socket.emit("playername", playername.value); // send username across to server
-    loginform.style.display = "none"; // set userform display to none
-    startBtn.disabled = true;
+    gamefield.style.visibility = "visible"; // display gamefield
+    logindiv.style.display = "none"; // set userform display to none
+    startbtn.disabled = true;
   } else {
     alert("Enter a valid name");
     playername.value = "";
   }
 };
 
-joinBtn.onclick = function() {
-  startBtn.disabled = false;
+joinbtn.onclick = function() {
+  startbtn.disabled = false;
 };
 
-startBtn.onclick = function() {
-  welcomeDiv.style.display = "none"; //clear the menu div and welcome message
+startbtn.onclick = function() {
+  welcomediv.style.display = "none"; //clear the menu div and welcome message
   menu.style.display = "none";
   users.style.visibility = "visible";
 
   cvs.style.visibility = "visible"; // display race arena
-  startBtn.disabled = true;
+  startbtn.disabled = true;
   //join the game room
 };
 
-let cvs = document.getElementById("snake-race");
 const ctx = cvs.getContext("2d");
 const cvsH = cvs.clientHeight;
 const cvsW = cvs.clientWidth;
@@ -49,18 +52,52 @@ const cell = 20;
 
 let direction;
 
-function addPlayersToList(allplyers) {
+/* socket.on("get users", allplayers => {
+  let html = "";
   for (let index = 0; index < allplayers.length; index++) {
-    let list = document.createElement("li");
-    list.classList.add("well");
-    let username = `PLAYER ${index + 1}: ${allplayers[index].name}`;
-    list.style.color = allplayers[index].color;
+    html += '<li class="list-group-item">' + allplayers[index] + "</li>";
+  }
+  playersList.append(html);
+}); */
+function addPlayersToList(players) {
+  for (var i = 0; i < players.length; i++) {
+    let newDiv = document.createElement("div");
+    newDiv.setAttribute("class", "well well-sm");
+    let username = `Player ${i + 1}: ${players[i].name}`;
+    //newDiv.style.color = players[i].color;
     let textnode = document.createTextNode(username);
-    list.appendChild(textnode);
+    newDiv.appendChild(textnode);
     //check if node exists already
-    playersList.appendChild(list);
+    playersList.appendChild(newDiv);
   }
 }
+
+function removePlayersFromList(players) {
+  if (playersList.firstChild) {
+    while (playersList.firstChild) {
+      playersList.removeChild(playersList.firstChild);
+    }
+  }
+}
+
+socket.on("add player", allplayers => {
+  let length = allplayers.length;
+  console.log(`here: ${length}`);
+  switch (length) {
+    case 1:
+      //clear the div
+      removePlayersFromList(allplayers);
+      //refresh div
+      addPlayersToList(allplayers);
+      break;
+    default:
+      //if length is not one
+      //clear the div
+      removePlayersFromList(allplayers);
+      //refresh div
+      addPlayersToList(allplayers);
+  }
+});
 
 document.onkeydown = function(event) {
   let keyCode;
@@ -128,22 +165,24 @@ function drawScore(player) {
 
 function hitTheWall(player) {
   if (
-    player.x < 0 ||
-    player.x >= cvsW / cell ||
-    player.y < 0 ||
-    player.y >= cvsH / cell
+    player.x <= 0 ||
+    player.x >= cvsW / cell - 1 ||
+    player.y <= 0 ||
+    player.y >= cvsH / cell - 1
   ) {
     console.log("i just hit the wall");
     //dead.play();
     //delay snake
-    //setTimeout(moveSnake, 1000 / 2);
+    //clearInterval(game);
+    direction = "";
+    document.removeEventListener("keypress");
+    alert("you lost!");
   }
 }
 
 /******************************************
  ******** GAME STARTS HERE ****************
  *******************************************/
-
 socket.on("welcome", (thisPlayer, allplayers) => {
   ctx.clearRect(0, 0, cvsW, cvsH);
 
@@ -153,18 +192,13 @@ socket.on("welcome", (thisPlayer, allplayers) => {
     //draw current player Snake
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  socket.on("sendfood", function(food) {
-    //receive food position and draw to canvas
-    thefood = food;
-  });
   //draw this player
   //drawPlayerSnake(thisPlayer, thisPlayer.snake);
   //setInterval(drawAll, 500);
-  addPlayersToList(allplayers);
 });
 
 //update other users canvas with new players when new player joins
-socket.on("currentplayers", allplayers => {
+socket.on("update players", allplayers => {
   ctx.clearRect(0, 0, cvsW, cvsH);
   for (let i = 0; i < allplayers.length; i++) {
     //draw each player Snake
@@ -173,14 +207,18 @@ socket.on("currentplayers", allplayers => {
   console.log("A new player just joined");
 });
 
+socket.on("send food", function(food) {
+  //receive food position and draw to canvas
+  thefood = food;
+});
+
 //if a player leaves, everyone gets new set of players
-socket.on("playerLeft", function(allplayers) {
+socket.on("player left", function(allplayers) {
   ctx.clearRect(0, 0, cvsW, cvsH);
   for (let i = 0; i < allplayers.length; i++) {
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  addPlayersToList(allplayers);
-  console.log("A player Has left");
+  console.log("A player has left");
 });
 
 //setInterval(drawall, 500);
@@ -190,7 +228,7 @@ function moveSnake() {
     case "up":
       socket.emit("keypressed", 38);
       //server provides updated player coordinates
-      socket.on("movement", function(thisPlayer, allplayers) {
+      socket.on("player moved", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
         for (let i = 0; i < allplayers.length; i++) {
@@ -205,7 +243,7 @@ function moveSnake() {
     case "down":
       socket.emit("keypressed", 40);
       //server provides updated player coordinates
-      socket.on("movement", function(thisPlayer, allplayers) {
+      socket.on("player moved", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
         for (let i = 0; i < allplayers.length; i++) {
@@ -220,7 +258,7 @@ function moveSnake() {
     case "left":
       socket.emit("keypressed", 37);
       //server provides updated player coordinates
-      socket.on("movement", function(thisPlayer, allplayers) {
+      socket.on("player moved", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
         for (let i = 0; i < allplayers.length; i++) {
@@ -235,7 +273,7 @@ function moveSnake() {
     case "right":
       socket.emit("keypressed", 39);
       //server provides updated player coordinates
-      socket.on("movement", function(thisPlayer, allplayers) {
+      socket.on("player moved", function(thisPlayer, allplayers) {
         //clear canvas
         ctx.clearRect(0, 0, cvsW, cvsH);
         for (let i = 0; i < allplayers.length; i++) {
@@ -250,4 +288,4 @@ function moveSnake() {
   }
 }
 
-setInterval(moveSnake, 1000 / 100);
+let game = setInterval(moveSnake, 1000 / 3);
