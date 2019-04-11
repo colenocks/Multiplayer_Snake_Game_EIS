@@ -3,13 +3,13 @@ const express = require("express");
 //const bodyParser = require("body-parser");
 
 const app = express();
-const port = process.env.PORT || 1337;
+var port = process.env.PORT || 1337;
 const server = app.listen(port);
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-/* app.get('/', function(req, res){
-  res.sendFile(__dirname+ '/index.html')
-}) */
+app.get("/", function(req, res) {
+  res.sendFile(__dirname + "/index.html");
+});
 
 /* app.post("/snakerace", function(req, res) {
   if (!req.body) return res.sendStatus(400);
