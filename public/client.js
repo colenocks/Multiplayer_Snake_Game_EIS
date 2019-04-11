@@ -33,6 +33,24 @@ userform.onsubmit = function(e) {
 
 joinbtn.onclick = function() {
   startbtn.disabled = false;
+  socket.on("add player", allplayers => {
+    let length = allplayers.length;
+    console.log(`here: ${length}`);
+    switch (length) {
+      case 1:
+        //clear the div
+        removePlayersFromList(allplayers);
+        //refresh div
+        addPlayersToList(allplayers);
+        break;
+      default:
+        //if length is not one
+        //clear the div
+        removePlayersFromList(allplayers);
+        //refresh div
+        addPlayersToList(allplayers);
+    }
+  });
 };
 
 startbtn.onclick = function() {
@@ -79,25 +97,6 @@ function removePlayersFromList(playersList) {
     }
   }
 }
-
-socket.on("add player", allplayers => {
-  let length = allplayers.length;
-  console.log(`here: ${length}`);
-  switch (length) {
-    case 1:
-      //clear the div
-      removePlayersFromList(allplayers);
-      //refresh div
-      addPlayersToList(allplayers);
-      break;
-    default:
-      //if length is not one
-      //clear the div
-      removePlayersFromList(allplayers);
-      //refresh div
-      addPlayersToList(allplayers);
-  }
-});
 
 document.onkeydown = function(event) {
   let keyCode;
