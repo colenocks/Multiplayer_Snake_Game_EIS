@@ -1,10 +1,10 @@
 "use strict";
-var express = require("express");
-//var bodyParser = require("body-parser");
+const express = require("express");
+//const bodyParser = require("body-parser");
 
-var app = express();
-var port = process.env.PORT || 3000;
-var server = app.listen(3000);
+const app = express();
+const port = process.env.PORT || 3000;
+const server = app.listen(3000);
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 /* app.get('/', function(req, res){
@@ -20,8 +20,8 @@ app.use(express.static("public"));
 
 console.log("server is listening on *: " + port);
 
-var socket = require("socket.io");
-var io = socket(server);
+const socket = require("socket.io");
+const io = socket(server);
 
 const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
 const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
