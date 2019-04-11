@@ -33,6 +33,24 @@ userform.onsubmit = function(e) {
 
 joinbtn.onclick = function() {
   startbtn.disabled = false;
+  socket.on("add player", allplayers => {
+    let length = allplayers.length;
+    console.log(`here: ${length}`);
+    switch (length) {
+      case 1:
+        //clear the div
+        removePlayersFromList(allplayers);
+        //refresh div
+        addPlayersToList(allplayers);
+        break;
+      default:
+        //if length is not one
+        //clear the div
+        removePlayersFromList(allplayers);
+        //refresh div
+        addPlayersToList(allplayers);
+    }
+  });
 };
 
 startbtn.onclick = function() {
@@ -62,7 +80,7 @@ let direction;
 function addPlayersToList(players) {
   for (var i = 0; i < players.length; i++) {
     let newDiv = document.createElement("div");
-    newDiv.setAttribute("class", "well well-sm");
+    newDiv.setAttribute("class", "underline");
     let username = `Player ${i + 1}: ${players[i].name}`;
     //newDiv.style.color = players[i].color;
     let textnode = document.createTextNode(username);
@@ -79,25 +97,6 @@ function removePlayersFromList(players) {
     }
   }
 }
-
-socket.on("add player", allplayers => {
-  let length = allplayers.length;
-  console.log(`here: ${length}`);
-  switch (length) {
-    case 1:
-      //clear the div
-      removePlayersFromList(allplayers);
-      //refresh div
-      addPlayersToList(allplayers);
-      break;
-    default:
-      //if length is not one
-      //clear the div
-      removePlayersFromList(allplayers);
-      //refresh div
-      addPlayersToList(allplayers);
-  }
-});
 
 document.onkeydown = function(event) {
   let keyCode;
@@ -163,20 +162,22 @@ function drawScore(player) {
   ctx.fillText(player.score, player.scorePos.x, player.scorePos.y);
 }
 
-function hitTheWall(player) {
-  if (
-    player.x <= 0 ||
-    player.x >= cvsW / cell - 1 ||
-    player.y <= 0 ||
-    player.y >= cvsH / cell - 1
-  ) {
-    console.log("i just hit the wall");
-    //dead.play();
-    //delay snake
-    //clearInterval(game);
-    direction = "";
-    //document.removeEventListener("keydown");
-    alert("you lost!");
+function hitTheWall(players) {
+  for (var i = 0; i < players.lengh; i++) {
+    if (
+      players[i].x <= 0 ||
+      players[i].x >= cvsW / cell - 1 ||
+      players[i].y <= 0 ||
+      players[i].y >= cvsH / cell - 1
+    ) {
+      console.log("i just hit the wall");
+      //dead.play();
+      //delay snake
+      //clearInterval(game);
+      direction = "";
+      //document.removeEventListener("keydown");
+      alert("you lost!");
+    }
   }
 }
 
@@ -248,7 +249,7 @@ function moveSnake() {
         ctx.clearRect(0, 0, cvsW, cvsH);
         for (let i = 0; i < allplayers.length; i++) {
           //update all snakes on canvas
-          // drawPlayerSnake(allplayers[i], allplayers[i].snake);
+          drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
         drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
