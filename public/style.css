@@ -102,8 +102,10 @@ header h2 {
   visibility: hidden;
 }
 
-.well-sm:hover {
-  background-color: #0099cc;
+.underline:hover {
+  background-color: #fff;
+  border-radius: 10px;
+  border-bottom: 1px dashed #000;
 }
 
 #snake-race {
