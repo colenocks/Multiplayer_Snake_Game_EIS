@@ -4,7 +4,7 @@ const express = require("express");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const server = app.listen(3000);
+const server = app.listen(port);
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 /* app.get('/', function(req, res){

@@ -175,7 +175,7 @@ function hitTheWall(player) {
     //delay snake
     //clearInterval(game);
     direction = "";
-    document.removeEventListener("keypress");
+    //document.removeEventListener("keydown");
     alert("you lost!");
   }
 }
