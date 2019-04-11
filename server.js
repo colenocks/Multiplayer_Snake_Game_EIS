@@ -3,7 +3,7 @@ const express = require("express");
 //const bodyParser = require("body-parser");
 
 const app = express();
-var port = process.env.PORT || 1337;
+var port = process.env.PORT || 3000;
 const server = app.listen(port);
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -20,7 +20,7 @@ app.get("/", function(req, res) {
 
 console.log("server is listening on *: " + port);
 
-const socket = require("socket.io");
+const socket = require("../socket.io/socket.io");
 const io = socket(server);
 
 const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
@@ -28,7 +28,7 @@ const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
 const cell = 20;
 
 var players = [];
-
+var newfood;
 class newPlayer {
   constructor() {
     this.id;
@@ -139,102 +139,99 @@ io.sockets.on("connection", function(socket) {
     io.emit("add player", players);
     console.log(currentPlayer.name);
 
-    socket.broadcast.emit("update players", players);
     socket.emit("welcome", currentPlayer, players);
+    socket.broadcast.emit("update players", players);
     console.log("new connection: " + currentPlayer.name);
     console.log(currentPlayer.x + "," + currentPlayer.y);
     //if (players.length == 2) {
     //generate food on canvas only when users are 2
     //socket.on("", data => {
-    broadcastFood();
-  });
 
-  var newfood;
-  function broadcastFood() {
-    if (players.length == 2) {
+    function broadcastFood() {
+      //if (players.length == 2) {
       newfood = createFood(players);
       io.emit("send food", newfood); //everyone sees the food
-    } else {
-      newfood = {
-        x: -7,
-        y: -50
-      };
-      io.emit("send food", newfood); //take the food away from the canvas
+      //}
     }
-  }
+    broadcastFood();
 
-  /* if (players.length == 2) {
+    /* if (players.length == 2) {
      broadcastFood();
   } */
 
-  socket.on("keypressed", function(key) {
-    if (key == 38) {
-      //up
-      //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
-      currentPlayer.y -= currentPlayer.speed;
-      //}
-      currentPlayer.update();
-      //check if food eaten
-      for (var i = 0; i < players.length; i++) {
-        if (eatTheFood(players[i], newfood)) {
-          broadcastFood();
+    socket.on("keypressed", function(key) {
+      if (key === 38) {
+        //up
+        //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
+        currentPlayer.y--;
+        //}
+        currentPlayer.update();
+        //check if food eaten
+        for (var i = 0; i < players.length; i++) {
+          if (eatTheFood(players[i], newfood)) {
+            broadcastFood();
+          }
         }
+        io.emit("player moved", currentPlayer, players);
+        /* socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players); */
       }
-      socket.emit("player moved", currentPlayer, players);
-      socket.broadcast.emit("player moved", currentPlayer, players);
-    }
-    if (key == 40) {
-      //down
-      //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
-      currentPlayer.y += currentPlayer.speed;
-      //}
-      currentPlayer.update();
-      //check if food eaten
-      for (var i = 0; i < players.length; i++) {
-        if (eatTheFood(players[i], newfood)) {
-          broadcastFood();
+      if (key === 40) {
+        //down
+        //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
+        currentPlayer.y++;
+        //}
+        currentPlayer.update();
+        //check if food eaten
+        for (var i = 0; i < players.length; i++) {
+          if (eatTheFood(players[i], newfood)) {
+            broadcastFood();
+          }
         }
+        io.emit("player moved", currentPlayer, players);
+        /* socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players); */
       }
-      socket.emit("player moved", currentPlayer, players);
-      socket.broadcast.emit("player moved", currentPlayer, players);
-    }
-    if (key == 37) {
-      //left
-      //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
-      currentPlayer.x -= currentPlayer.speed;
-      //}
-      currentPlayer.update();
-      //check if food eaten
-      for (var i = 0; i < players.length; i++) {
-        if (eatTheFood(players[i], newfood)) {
-          broadcastFood();
+      if (key === 37) {
+        //left
+        //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
+        currentPlayer.x--;
+        //}
+        currentPlayer.update();
+        //check if food eaten
+        for (var i = 0; i < players.length; i++) {
+          if (eatTheFood(players[i], newfood)) {
+            broadcastFood();
+          }
         }
+        io.emit("player moved", currentPlayer, players);
+        /* socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players); */
       }
-      socket.emit("player moved", currentPlayer, players);
-      socket.broadcast.emit("player moved", currentPlayer, players);
-    }
-    if (key == 39) {
-      //right
-      //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
-      currentPlayer.x += currentPlayer.speed;
-      //}
-      currentPlayer.update();
-      //check if food eaten
-      for (var i = 0; i < players.length; i++) {
-        if (eatTheFood(players[i], newfood)) {
-          broadcastFood();
+      if (key === 39) {
+        //right
+        //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
+        currentPlayer.x++;
+        //}
+        currentPlayer.update();
+        //check if food eaten
+        for (var i = 0; i < players.length; i++) {
+          if (eatTheFood(players[i], newfood)) {
+            broadcastFood();
+          }
         }
+        io.emit("player moved", currentPlayer, players);
+        /* socket.emit("player moved", currentPlayer, players);
+      socket.broadcast.emit("player moved", currentPlayer, players); */
       }
-      socket.emit("player moved", currentPlayer, players);
-      socket.broadcast.emit("player moved", currentPlayer, players);
-    }
+    });
   });
 
   socket.on("disconnect", function() {
     players.splice(players.indexOf(currentPlayer), 1);
     console.log(currentPlayer.name + " just left: ");
-    io.emit("add player", players);
     socket.broadcast.emit("player left", players);
     socket.emit("player left", players);
+    io.emit("add player", players);
   });
 });
