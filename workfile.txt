@@ -1,78 +1,488 @@
-//Event listener for direction
-    function getDirection2(e) {
-        if (e.keyCode == 65 && direction2 != "right") {
-            direction2 = "left";
-            left.play();
-        }
-        else if (e.keyCode == 87 && direction2 != "down") {
-            direction2 = "up";
-            up.play();
-        }
-        else if (e.keyCode == 68 && direction2 != "left") {
-            direction2 = "right";
-            right.play();
-        }
-        else if (e.keyCode == 83 && direction2 != "up") {
-            direction2 = "down";
-            down.play();
-        }
+/* app.post("/snakerace", function(req, res) {
+  if (!req.body) return res.sendStatus(400);
+  console.log(req.body);
+  //res.send('<div class="well">Welcome ' + req.body.playername + "</div>");
+  res.sendFile(__dirname + "/public/snakerace.html");
+}); */
+
+function eatTheFood(player, food) {
+  //check if new position corresponds with food position
+  var newlength = false;
+  var eaten = false;
+  if (player.x == food.x && player.y == food.y) {
+    //increase snake length of player
+    newlength = true;
+    eaten = true;
+    //increase this player's snake length in the server
+    socket.emit("change", newlength, eaten);
+    //inform server to regenerate new food position
+    //socket.emit("Isfoodeaten", eaten);
+  }
+}
+
+/* function PlayerMoved() {
+  //draw all player snakes on updated positions
+  ctx.clearRect(0, 0, cvsW, cvsH);
+  //draw all players
+  for (var i = 0; i < allplayers.length; i++) {
+    drawPlayerSnake(thisPlayer, thisPlayer.snake);
+  }
+} */
+
+//SERVER
+/* if (currentPlayer.eatTheFood(newfood)) {
+  sendTheFood();
+} */
+
+("use strict");
+var express = require("express");
+
+var app = express();
+var port = process.env.PORT || 3000;
+var server = app.listen(3000);
+
+app.use(express.static("public"));
+
+console.log("server is listening on *: " + port);
+
+var socket = require("socket.io");
+var io = socket(server);
+
+const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
+const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
+const cell = 20;
+
+var players = [];
+
+class newPlayer {
+  constructor() {
+    this.id;
+    this.x = Math.floor(Math.random() * (canvasWidth / cell - 1));
+    this.y = Math.floor(Math.random() * (canvasHeight / cell - 1));
+    this.color = Color();
+    this.speed = 1;
+    this.total = 1;
+    this.snake = [];
+  }
+  //when snake moves
+  update() {
+    //if (this.total === this.snake.length) {
+    for (var i = 0; i < this.total.length; i++) {
+      //shift positions (forward) to simulate movement
+      //discarding the previous position
+      this.snake[i] = this.snake[i + 1];
     }
+    //}
+    //set new position coordinates
+    this.snake[this.total - 1] = {
+      x: this.x,
+      y: this.y
+    };
+  }
 
-    //snake 2 position
-    worm[0] = {
-        x: cvsW / cell - 1,
-        y: cvsH / cell - 1
+  increaseLength(newlen) {
+    this.total = this.total + newlen;
+  }
+}
+
+function makeFood(players) {
+  var x = Math.floor(Math.random() * (canvasWidth / cell - 1));
+  var y = Math.floor(Math.random() * (canvasHeight / cell - 1));
+
+  for (var i = 0; i < players.length; i++) {
+    //check each players snake head
+    if (players[i].x == x && players[i].y == y) {
+      makeFood(players);
     }
+  }
+  return { x: x, y: y };
+}
 
-    //draw snake function
-    function drawWorm(posX, posY, i) {
-        ctx.fillStyle = (i == 0) ? "blue" : "#333";
-        ctx.fillRect(posX * cell, posY * cell, cell, cell);
+io.sockets.on("connection", function(socket) {
+  var currentPlayer = new newPlayer();
+  //set player id
+  currentPlayer.id = socket.id;
+  players.push(currentPlayer);
 
-        //border around the snake
-        ctx.fillStyle = "#000";
-        ctx.strokeRect(posX * cell, posY * cell, cell, cell);
+  socket.broadcast.emit("currentplayers", players);
+  socket.emit("welcome", currentPlayer, players);
+  console.log("new connection: " + socket.id);
+  console.log(currentPlayer.x + "," + currentPlayer.y);
+  //if (players.length == 2) {
+  //generate food on canvas only when users are 2
+  //socket.on("", data => {
+  var newfood;
+  function sendTheFood() {
+    newfood = makeFood(players);
+    console.log(newfood.x);
+    io.emit("sendfood", newfood);
+    //socket.broadcast.emit("sendfood", newfood);
+  }
+
+  sendTheFood();
+
+  socket.on("change", (newlen, eaten) => {
+    if (eaten) {
+      currentPlayer.increaseLength(newlen);
+      sendTheFood();
     }
+  });
 
-    //draw worm with position
-    for (var i = 0; i < worm.length; i++) {
-            var posX = worm[i].x;
-            var posY = worm[i].y;
-            drawWorm(posX, posY, i);
-        }
+  /* if (players.length == 2) {
+    sendTheFood();
+  } */
 
-//add event that disables direction for 3 seconds
-    /* function pauseSnake(e) {
-        if (e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40) {
-            //disable direction
-            direction = "";
-            //
-        }
-    } */
+  socket.on("keypressed", function(key) {
+    if (key === 38 && key != 40) {
+      //up
+      //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
+      currentPlayer.y -= currentPlayer.speed;
+      //}
+      currentPlayer.update();
+      socket.emit("movement", currentPlayer, players);
+      socket.broadcast.emit("movement", currentPlayer, players);
+    }
+    if (key === 40 && key != 38) {
+      //down
+      //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
+      currentPlayer.y += currentPlayer.speed;
+      //}
+      currentPlayer.update();
+      socket.emit("movement", currentPlayer, players);
+      socket.broadcast.emit("movement", currentPlayer, players);
+    }
+    if (key === 37 && key != 39) {
+      //left
+      //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
+      currentPlayer.x -= currentPlayer.speed;
+      //}
+      currentPlayer.update();
+      socket.emit("movement", currentPlayer, players);
+      socket.broadcast.emit("movement", currentPlayer, players);
+    }
+    if (key === 39 && key != 37) {
+      //right
+      //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
+      currentPlayer.x += currentPlayer.speed;
+      //}
+      currentPlayer.update();
+      socket.emit("movement", currentPlayer, players);
+      socket.broadcast.emit("movement", currentPlayer, players);
+    }
+  });
 
-    // check collision function
-    /* function collision(head, array) {
-        for (let i = 0; i < array.length; i++) {
-            if (head.x == array[i].x && head.y == array[i].y) {
-                return true;
-            }
-        }
-        return false;
-    } */    
+  socket.on("disconnect", function() {
+    players.splice(players.indexOf(currentPlayer), 1);
+    console.log(currentPlayer.id + " just left: ");
+    socket.broadcast.emit("playerLeft", players);
+    socket.emit("playerLeft", players);
+  });
+});
 
-    // load audio files
-    let dead = new Audio();
-    let eat = new Audio();
-    let up = new Audio();
-    let right = new Audio();
-    let left = new Audio();
-    let down = new Audio();
+function Color() {
+  return "green" || "blue";
+}
 
-    dead.src = "audio/dead.mp3";
-    eat.src = "audio/eat.mp3";
-    up.src = "audio/up.mp3";
-    right.src = "audio/right.mp3";
-    left.src = "audio/left.mp3";
-    down.src = "audio/down.mp3";
+//import { request } from "https";
 
-    
+var userform = document.getElementById("user-form");
+var gamefield = document.getElementById("game-field");
+var menu = document.getElementById("menu");
+var loginBtn = document.getElementById("login");
+var joinBtn = document.getElementById("join");
+var startBtn = document.getElementById("start");
+var welcomeDiv = document.getElementById("welcome-div");
+var playername = document.getElementById("player-name");
+
+var socket;
+loginBtn.onclick = function() {
+  if (playername.value != "") {
+    // display gamefield
+    gamefield.style.visibility = "visible";
+    menu.style.visibility = "visible";
+    // append username to array of activePlayers
+
+    // set userform display to none
+    userform.style.display = "none";
+    startBtn.disabled = true;
+    playername.value = "";
+  } else {
+    alert("Enter a valid name");
+    playername.value = "";
+  }
+};
+
+joinBtn.onclick = function() {
+  startBtn.disabled = false;
+};
+
+startBtn.onclick = function() {
+  //clear the menu div and welcome message
+  welcomeDiv.style.display = "none";
+  menu.style.visibility = "hidden";
+
+  // display race arena
+  cvs.style.visibility = "visible";
+  startBtn.disabled = true;
+  //join the game room
+};
+
+socket = io.connect();
+var cvs = document.getElementById("snake-race");
+const ctx = cvs.getContext("2d");
+const cvsH = cvs.clientHeight;
+const cvsW = cvs.clientWidth;
+const cell = 20;
+
+let direction = "right";
+
+document.onkeydown = function(event) {
+  var keyCode;
+  if (event == null) {
+    keyCode = window.event.keyCode;
+  } else {
+    keyCode = event.keyCode;
+  }
+  switch (keyCode) {
+    // left
+    case 37:
+      direction = "left";
+      break;
+    // up
+    case 38:
+      direction = "up";
+      break;
+    // right
+    case 39:
+      direction = "right";
+      break;
+    // down
+    case 40:
+      direction = "down";
+      break;
+    default:
+      break;
+  }
+};
+
+//draw player function
+function drawPlayerSnake(player, snakeArr) {
+  //check for movement
+  if (snakeArr.length > 1) {
+    for (var i = 0; i < snakeArr.length; i++) {
+      ctx.fillStyle = player.color;
+      ctx.fillRect(snakeArr[i].x * cell, snakeArr[i].y * cell, cell, cell);
+      ctx.fillStyle = "#000"; //border around the snake
+      ctx.strokeRect(snakeArr[i].x * cell, snakeArr[i].y * cell, cell, cell);
+    }
+  } else {
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x * cell, player.y * cell, cell, cell);
+    ctx.fillStyle = "#000"; //border around the snake
+    ctx.strokeRect(player.x * cell, player.y * cell, cell, cell);
+  }
+  drawFood(thefood.x, thefood.y);
+}
+
+var thefood = {};
+
+//draw food
+function drawFood(posx, posy) {
+  //draw food to canvas
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(posx * cell, posy * cell, cell, cell);
+  ctx.fillStyle = "#000"; //border around food
+  ctx.strokeRect(posx * cell, posy * cell, cell, cell);
+
+  requestAnimationFrame(function() {
+    drawFood(posx, posy);
+  });
+}
+
+function eatTheFood(player, food) {
+  //check if new position corresponds with food position
+  var newlength = 0;
+  var eaten = false;
+  if (player.x == food.x && player.y == food.y) {
+    newlength = 1;
+    eaten = true;
+    //inform server to regenerate new food position
+    //socket.emit("Isfoodeaten", eaten);
+  }
+  //increase this player's snake length in the server
+  socket.emit("change", newlength, eaten);
+}
+
+function hitTheWall(player) {
+  if (
+    player.x < 0 ||
+    player.x >= cvsW / cell ||
+    player.y < 0 ||
+    player.y >= cvsH / cell
+  ) {
+    //pause snake
+    direction = "";
+    console.log("i just hit the wall");
+    //dead.play();
+    //delay snake
+  }
+}
+
+/******************************************
+ ******** GAME STARTS HERE ****************
+ *******************************************/
+socket.on("sendfood", function(food) {
+  //receive food position and draw to canvas
+  thefood = {};
+  thefood = food;
+});
+
+socket.on("welcome", (thisPlayer, allplayers) => {
+  ctx.clearRect(0, 0, cvsW, cvsH);
+
+  console.log("Hello " + thisPlayer.x);
+  //draw all players
+  for (var i = 0; i < allplayers.length; i++) {
+    //draw current player Snake
+    drawPlayerSnake(allplayers[i], allplayers[i].snake);
+  }
+  //draw this player
+  //drawPlayerSnake(thisPlayer, thisPlayer.snake);
+  //setInterval(drawAll, 500);
+});
+
+//update other users canvas with new players when new player joins
+socket.on("currentplayers", allplayers => {
+  ctx.clearRect(0, 0, cvsW, cvsH);
+  for (var i = 0; i < allplayers.length; i++) {
+    //draw each player Snake
+    drawPlayerSnake(allplayers[i], allplayers[i].snake);
+  }
+  console.log("A new player just joined");
+  //drawFood(thefood.x, thefood.y);
+});
+
+//if a player leaves, everyone gets new set of players
+socket.on("playerLeft", function(allplayers) {
+  ctx.clearRect(0, 0, cvsW, cvsH);
+  for (var i = 0; i < allplayers.length; i++) {
+    drawPlayerSnake(allplayers[i], allplayers[i].snake);
+  }
+  console.log("A player Has left");
+});
+
+//setInterval(drawall, 500);
+
+function moveSnake() {
+  drawFood(thefood.x, thefood.y);
+  if (direction === "up" && direction !== "down") {
+    socket.emit("keypressed", 38);
+    //server provides updated player coordinates
+    socket.on("movement", function(thisPlayer, allplayers) {
+      //clear canvas
+      ctx.clearRect(0, 0, cvsW, cvsH);
+      for (var i = 0; i < allplayers.length; i++) {
+        //update all snakes on canvas
+        drawPlayerSnake(allplayers[i], allplayers[i].snake);
+        eatTheFood(allplayers[i], thefood);
+        hitTheWall(allplayers[i]);
+      }
+      //drawPlayerSnake(thisPlayer, thisPlayer.snake);
+
+      //check if snake hits wall
+    });
+  } else if (direction === "down" && direction !== "up") {
+    socket.emit("keypressed", 40);
+    //server provides updated player coordinates
+    socket.on("movement", function(thisPlayer, allplayers) {
+      //clear canvas
+      ctx.clearRect(0, 0, cvsW, cvsH);
+      for (var i = 0; i < allplayers.length; i++) {
+        //update all snakes on canvas
+        drawPlayerSnake(allplayers[i], allplayers[i].snake);
+        eatTheFood(allplayers[i], thefood);
+        hitTheWall(allplayers[i]);
+      }
+      //drawPlayerSnake(thisPlayer, thisPlayer.snake);
+
+      //check if snake hits wall
+    });
+  } else if (direction === "left" && direction !== "right") {
+    socket.emit("keypressed", 37);
+    //server provides updated player coordinates
+    socket.on("movement", function(thisPlayer, allplayers) {
+      //clear canvas
+      ctx.clearRect(0, 0, cvsW, cvsH);
+      for (var i = 0; i < allplayers.length; i++) {
+        //update all snakes on canvas
+        drawPlayerSnake(allplayers[i], allplayers[i].snake);
+        eatTheFood(allplayers[i], thefood);
+        hitTheWall(allplayers[i]);
+      }
+      //drawPlayerSnake(thisPlayer, thisPlayer.snake);
+
+      //check if snake hits wall
+    });
+  } else if (direction === "right" && direction !== "left") {
+    socket.emit("keypressed", 39);
+    //server provides updated player coordinates
+    socket.on("movement", function(thisPlayer, allplayers) {
+      //clear canvas
+      ctx.clearRect(0, 0, cvsW, cvsH);
+      for (var i = 0; i < allplayers.length; i++) {
+        //update all snakes on canvas
+        drawPlayerSnake(allplayers[i], allplayers[i].snake);
+        eatTheFood(allplayers[i], thefood);
+        hitTheWall(allplayers[i]);
+      }
+      //drawPlayerSnake(thisPlayer, thisPlayer.snake);
+
+      //check if snake hits wall
+    });
+  }
+}
+
+setInterval(moveSnake, 700);
+
+//objectives
+//1. create a div in html that has it's own canvas appended to the end of the snake-race canvas
+socket.on("startgame", data => {
+  //1. create a div with a class of well and append it to the game field div
+});
+
+//Functions for Competition
+//const playerMax = 4;
+let semiFinalArray = [];
+socket.on("player joins", player, registerPlayer);
+function registerPlayer() {
+  semiFinalArray.push(player);
+}
+
+function MatchPlayers(players) {
+  var length = players.length;
+  switch (length) {
+    case 1:
+      //Single Player Game
+      socket.emit("match players", players);
+
+      break;
+    case 2:
+      //Versus
+      socket.emit("match players", players);
+      break;
+    case 4:
+      //Semi finals
+      break;
+    default:
+      break;
+  }
+}
+
+//when user clicks on play, match occurs
+socket.on("play", data => {
+  if (data) {
+    MatchPlayers(players);
+  } else {
+    //do something else
+  }
+});
