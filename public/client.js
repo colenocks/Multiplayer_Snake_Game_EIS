@@ -5,6 +5,7 @@ let menu = document.getElementById("menu-area");
 let users = document.getElementById("users-area");
 let gamefield = document.getElementById("game-field");
 let welcomediv = document.getElementById("welcome-div");
+let versusdiv = document.getElementById("versus");
 const cvs = document.getElementById("snake-race");
 
 let playersList = document.getElementById("players-list");
@@ -14,7 +15,10 @@ let joinbtn = document.getElementById("join");
 let startbtn = document.getElementById("start");
 let playername = document.getElementById("playername");
 
-let socket = io.connect();
+let playerOne = document.getElementById("p-one");
+let playerTwo = document.getElementById("p-two");
+
+let socket = io();
 
 userform.onsubmit = function(e) {
   e.preventDefault();
@@ -33,24 +37,6 @@ userform.onsubmit = function(e) {
 
 joinbtn.onclick = function() {
   startbtn.disabled = false;
-  socket.on("add player", allplayers => {
-    let length = allplayers.length;
-    console.log(`here: ${length}`);
-    switch (length) {
-      case 1:
-        //clear the div
-        removePlayersFromList(allplayers);
-        //refresh div
-        addPlayersToList(allplayers);
-        break;
-      default:
-        //if length is not one
-        //clear the div
-        removePlayersFromList(allplayers);
-        //refresh div
-        addPlayersToList(allplayers);
-    }
-  });
 };
 
 startbtn.onclick = function() {
@@ -70,33 +56,67 @@ const cell = 20;
 
 let direction;
 
-/* socket.on("get users", allplayers => {
-  let html = "";
-  for (let index = 0; index < allplayers.length; index++) {
-    html += '<li class="list-group-item">' + allplayers[index] + "</li>";
-  }
-  playersList.append(html);
-}); */
 function addPlayersToList(players) {
   for (var i = 0; i < players.length; i++) {
-    let newDiv = document.createElement("div");
-    newDiv.setAttribute("class", "underline");
-    let username = `Player ${i + 1}: ${players[i].name}`;
+    let newList = document.createElement("li");
+    newList.setAttribute("class", "list-group-item");
+    newList.style.color = players[i].color;
+    let username = `${players[i].name}`;
     //newDiv.style.color = players[i].color;
     let textnode = document.createTextNode(username);
-    newDiv.appendChild(textnode);
+    newList.appendChild(textnode);
     //check if node exists already
-    playersList.appendChild(newDiv);
+    playersList.appendChild(newList);
+    if (i == 0) {
+      text = document.createTextNode(`${players[0].name}`);
+      playerOne.appendChild(text);
+    } else if (i == 1) {
+      text = document.createTextNode(`${players[0].name}`);
+      playerTwo.appendChild(`${players[1].name}`);
+    } else {
+      /* //waiting list
+      let waitList = document.createElement("li");
+      waitList.setAttribute("class", "list-group-item");
+      waitList.style.color = players[i].color;
+      let username = `${players[i].name}`;
+      //newDiv.style.color = players[i].color;
+      let textnode = document.createTextNode(username);
+      waitList.appendChild(textnode); */
+    }
   }
 }
 
-function removePlayersFromList(playersList) {
+function removePlayersFromList() {
   if (playersList.firstChild) {
     while (playersList.firstChild) {
       playersList.removeChild(playersList.firstChild);
     }
   }
 }
+
+/* function setChallengeBoard() {
+  var text = document.createTextNode(`${thisPlayer}`);
+  playerOne.appendChild(text);
+} */
+
+socket.on("add player", allplayers => {
+  let length = allplayers.length;
+  console.log(`Total Players: ${length}`);
+  switch (length) {
+    case 1:
+      //clear the div
+      removePlayersFromList();
+      //refresh div
+      addPlayersToList(allplayers);
+      break;
+    default:
+      //if length is not one
+      //clear the div
+      removePlayersFromList();
+      //refresh div
+      addPlayersToList(allplayers);
+  }
+});
 
 document.onkeydown = function(event) {
   let keyCode;
@@ -176,7 +196,7 @@ function hitTheWall(players) {
       //clearInterval(game);
       direction = "";
       //document.removeEventListener("keydown");
-      alert("you lost!");
+      console.log("you lost!");
     }
   }
 }
