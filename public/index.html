@@ -45,7 +45,7 @@
                   <li>
                     <input
                       type="button"
-                      id="start"
+                      id="play"
                       class="btn btn-success btn-lg"
                       value="play"
                     />
@@ -54,8 +54,8 @@
               </div>
               <!-- Users Area -->
               <div id="users-area">
-                <h4 class="well">Active Players</h4>
-                <div id="players-list" class="well"><!-- Dynamic content here --></div>
+                <h4 class="well noBottom-margin">Active Players</h4>
+                <ul id="players-list" class="list-group"><!-- Dynamic content here --></ul>
                 <button id="logout" class="btn btn-info btn-lg">Log Out</button>
               </div>
               
@@ -64,9 +64,12 @@
               <div id="game-field">
                 <div id="welcome-div">
                   <h1>
-                    Hi, Welcome to the Snake Race. Click <span>Play Game</span> to
+                    Hi, Welcome to the Snake Race. Click <span>Play</span> to
                     start, Goodluck!
                   </h1>
+                </div>
+                <div id ="versus">
+                  <h2><span id="p-one"></span> VERSUS <span id="p-two"></span></h2>
                 </div>
                 <canvas id="snake-race" height="300" width="500">
                   Your Browser does not support the canvas element
