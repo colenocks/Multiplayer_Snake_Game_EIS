@@ -12,7 +12,7 @@ let playersList = document.getElementById("players-list");
 let loginbtn = document.getElementById("login");
 let logoutbtn = document.getElementById("logout");
 let joinbtn = document.getElementById("join");
-let startbtn = document.getElementById("start");
+let playbtn = document.getElementById("play");
 let playername = document.getElementById("playername");
 
 let playerOne = document.getElementById("p-one");
@@ -28,7 +28,7 @@ userform.onsubmit = function(e) {
     menu.style.visibility = "visible";
     gamefield.style.visibility = "visible"; // display gamefield
     logindiv.style.display = "none"; // set userform display to none
-    startbtn.disabled = true;
+    playbtn.disabled = true;
   } else {
     alert("Enter a valid name");
     playername.value = "";
@@ -36,16 +36,16 @@ userform.onsubmit = function(e) {
 };
 
 joinbtn.onclick = function() {
-  startbtn.disabled = false;
+  playbtn.disabled = false;
 };
 
-startbtn.onclick = function() {
+playbtn.onclick = function() {
   welcomediv.style.display = "none"; //clear the menu div and welcome message
   menu.style.display = "none";
   users.style.visibility = "visible";
-
+  versusdiv.style.visibility = "visible";
   cvs.style.visibility = "visible"; // display race arena
-  startbtn.disabled = true;
+  playbtn.disabled = true;
   //join the game room
 };
 
