@@ -1,9 +1,4 @@
-<<<<<<< HEAD:app.js
 var express = require("express");
-=======
-"use strict";
-const express = require("express");
->>>>>>> e9d4ba86d1440c4772078f69760c6fef35f048d5:server.js
 //const bodyParser = require("body-parser");
 
 var app = express();
