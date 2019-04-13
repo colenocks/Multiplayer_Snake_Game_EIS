@@ -67,37 +67,44 @@ function addPlayersToList(players) {
     newList.appendChild(textnode);
     //check if node exists already
     playersList.appendChild(newList);
+  }
+}
+
+function clearPlayerList(div) {
+  if (div.firstChild) {
+    while (div.firstChild) {
+      div.removeChild(div.firstChild);
+    }
+  }
+}
+
+function setChallengeBoard(players) {
+  for (var i = 0; i < players.length; i++) {
     if (i == 0) {
-      text = document.createTextNode(`${players[0].name}`);
+      clearPlayerList(playerOne);
+      clearPlayerList(playerTwo);
+      var text = document.createTextNode(`${players[0].name}`);
       playerOne.appendChild(text);
     } else if (i == 1) {
-      text = document.createTextNode(`${players[0].name}`);
-      playerTwo.appendChild(`${players[1].name}`);
+      //clear div
+      clearPlayerList(playerOne);
+      clearPlayerList(playerTwo);
+      var text = document.createTextNode(`${players[0].name}`);
+      playerOne.appendChild(text);
+      text = document.createTextNode(`${players[1].name}`);
+      playerTwo.appendChild(text);
     } else {
       /* //waiting list
-      let waitList = document.createElement("li");
-      waitList.setAttribute("class", "list-group-item");
-      waitList.style.color = players[i].color;
-      let username = `${players[i].name}`;
-      //newDiv.style.color = players[i].color;
-      let textnode = document.createTextNode(username);
-      waitList.appendChild(textnode); */
+        let waitList = document.createElement("li");
+        waitList.setAttribute("class", "list-group-item");
+        waitList.style.color = players[i].color;
+        let username = `${players[i].name}`;
+        //newDiv.style.color = players[i].color;
+        let textnode = document.createTextNode(username);
+        waitList.appendChild(textnode); */
     }
   }
 }
-
-function removePlayersFromList() {
-  if (playersList.firstChild) {
-    while (playersList.firstChild) {
-      playersList.removeChild(playersList.firstChild);
-    }
-  }
-}
-
-/* function setChallengeBoard() {
-  var text = document.createTextNode(`${thisPlayer}`);
-  playerOne.appendChild(text);
-} */
 
 socket.on("add player", allplayers => {
   let length = allplayers.length;
@@ -105,16 +112,18 @@ socket.on("add player", allplayers => {
   switch (length) {
     case 1:
       //clear the div
-      removePlayersFromList();
+      clearPlayerList(playersList);
       //refresh div
       addPlayersToList(allplayers);
+      setChallengeBoard(allplayers);
       break;
     default:
       //if length is not one
       //clear the div
-      removePlayersFromList();
+      clearPlayerList(playersList);
       //refresh div
       addPlayersToList(allplayers);
+      setChallengeBoard(allplayers);
   }
 });
 
