@@ -24,15 +24,21 @@ userform.onsubmit = function(e) {
   e.preventDefault();
   if (playername.value != "") {
     socket.emit("player name", playername.value); // send username across to server
-
+    playername.value = "";
     menu.style.visibility = "visible";
     gamefield.style.visibility = "visible"; // display gamefield
     logindiv.style.display = "none"; // set userform display to none
     playbtn.disabled = true;
   } else {
     alert("Enter a valid name");
-    playername.value = "";
   }
+};
+
+logoutbtn.onclick = function() {
+  //display a modal that confirms exit
+  document.getElementById("game-area").style.display = "Block";
+  //close socket connection
+  socket.close();
 };
 
 joinbtn.onclick = function() {
@@ -48,6 +54,8 @@ playbtn.onclick = function() {
   playbtn.disabled = true;
   //join the game room
 };
+
+//}
 
 const ctx = cvs.getContext("2d");
 const cvsH = cvs.clientHeight;
@@ -192,22 +200,28 @@ function drawScore(player) {
 }
 
 function hitTheWall(players) {
-  for (var i = 0; i < players.lengh; i++) {
+  /* for (var i = 0; i < players.length; i++) {
     if (
-      players[i].x <= 0 ||
-      players[i].x >= cvsW / cell - 1 ||
-      players[i].y <= 0 ||
-      players[i].y >= cvsH / cell - 1
+      players[i].x < 0 ||
+      players[i].x > cvsW / cell - 1 ||
+      players[i].y < 0 ||
+      players[i].y > cvsH / cell - 1
     ) {
       console.log("i just hit the wall");
       //dead.play();
-      //delay snake
-      //clearInterval(game);
       direction = "";
+      //clearInterval(game);
+      //setTimeout(game, 1000);
       //document.removeEventListener("keydown");
-      console.log("you lost!");
+      //console.log("you lost!");
     }
-  }
+  } */
+}
+
+function delay() {
+  //delay snake
+  clearInterval(game);
+  setTimeout(game, 1000);
 }
 
 /******************************************
@@ -267,7 +281,7 @@ function moveSnake() {
         }
         //drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
-        hitTheWall(thisPlayer);
+        hitTheWall(allplayers);
       });
       break;
     case "down":
@@ -280,9 +294,9 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        drawPlayerSnake(thisPlayer, thisPlayer.snake);
+        //drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
-        hitTheWall(thisPlayer);
+        hitTheWall(allplayers);
       });
       break;
     case "left":
@@ -297,7 +311,7 @@ function moveSnake() {
         }
         //drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
-        hitTheWall(thisPlayer);
+        hitTheWall(allplayers);
       });
       break;
     case "right":
@@ -312,10 +326,28 @@ function moveSnake() {
         }
         // drawPlayerSnake(thisPlayer, thisPlayer.snake);
         //check if snake hits wall
-        hitTheWall(thisPlayer);
+        hitTheWall(allplayers);
       });
       break;
   }
 }
 
 let game = setInterval(moveSnake, 1000 / 3);
+
+var maxTicks = 90;
+var tickCount = 0;
+
+function tick() {
+  if (tickCount >= maxTicks) {
+    // Stops the interval.
+    clearInterval(myInterval);
+    return;
+  }
+  /*on each tick */
+  document.getElementById("timer").innerHtml = maxTicks - tickCount;
+  tickCount++;
+}
+
+//if (players.length > 0) {
+// Start calling tick function every 1 second.
+var myInterval = setInterval(tick, 1000);

@@ -153,13 +153,16 @@ io.sockets.on("connection", function(socket) {
     /* if (players.length == 2) {
      broadcastFood();
   } */
+    //send game time to all players
+    const seconds = 60;
+    io.emit("set time", seconds, players);
 
     socket.on("keypressed", function(key) {
       if (key === 38) {
         //up
-        //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
-        currentPlayer.y--;
-        //}
+        if (currentPlayer.y > 0 || currentPlayer.y < canvasHeight / cell - 1) {
+          currentPlayer.y--;
+        }
         currentPlayer.update();
         //check if food eaten
         for (var i = 0; i < players.length; i++) {
@@ -173,9 +176,9 @@ io.sockets.on("connection", function(socket) {
       }
       if (key === 40) {
         //down
-        //if (currentPlayer.y < 0 || currentPlayer.y >= canvasHeight / cell) {
-        currentPlayer.y++;
-        //}
+        if (currentPlayer.y > 0 || currentPlayer.y < canvasHeight / cell - 1) {
+          currentPlayer.y++;
+        }
         currentPlayer.update();
         //check if food eaten
         for (var i = 0; i < players.length; i++) {
@@ -189,9 +192,9 @@ io.sockets.on("connection", function(socket) {
       }
       if (key === 37) {
         //left
-        //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
-        currentPlayer.x--;
-        //}
+        if (currentPlayer.x > 0 || currentPlayer.x < canvasWidth / cell - 1) {
+          currentPlayer.x--;
+        }
         currentPlayer.update();
         //check if food eaten
         for (var i = 0; i < players.length; i++) {
@@ -205,9 +208,9 @@ io.sockets.on("connection", function(socket) {
       }
       if (key === 39) {
         //right
-        //if (currentPlayer.x < 0 || currentPlayer.x >= canvasWidth / cell) {
-        currentPlayer.x++;
-        //}
+        if (currentPlayer.x > 0 || currentPlayer.x < canvasWidth / cell - 1) {
+          currentPlayer.x++;
+        }
         currentPlayer.update();
         //check if food eaten
         for (var i = 0; i < players.length; i++) {
