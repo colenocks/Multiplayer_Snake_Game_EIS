@@ -24,7 +24,6 @@ body {
   /* background: #608da7; 
   background-size: cover;
   background-attachment: fixed;*/
-  background: -webkit-image-set(url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND?cknkimpcfkpmmikggddpidpmaljigegp) 1x, url(chrome-search://theme/IDR_THEME_NTP_BACKGROUND@2x?cknkimpcfkpmmikggddpidpmaljigegp) 2x);
   height: 100%;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   font-size: 2rem;

@@ -64,6 +64,22 @@ const cell = 20;
 
 let direction;
 
+//include audio files
+const dead = new Audio();
+const eat = new Audio();
+const left = new Audio();
+const right = new Audio();
+const up = new Audio();
+const down = new Audio();
+
+dead.src = "audio/dead.mp3";
+eat.src = "audio/eat.mp3";
+left.src = "audio/left.mp3";
+right.src = "audio/right.mp3";
+up.src = "audio/up.mp3";
+down.src = "audio/down.mp3";
+
+//add players to list in ul element
 function addPlayersToList(players) {
   for (var i = 0; i < players.length; i++) {
     let newList = document.createElement("li");
@@ -78,6 +94,7 @@ function addPlayersToList(players) {
   }
 }
 
+//remove all added list items
 function clearPlayerList(div) {
   if (div.firstChild) {
     while (div.firstChild) {
@@ -86,6 +103,7 @@ function clearPlayerList(div) {
   }
 }
 
+//place player names on board
 function setChallengeBoard(players) {
   for (var i = 0; i < players.length; i++) {
     if (i == 0) {
@@ -143,12 +161,16 @@ document.onkeydown = function(event) {
     keyCode = event.keyCode;
   }
   if (keyCode == 37 && direction != "right") {
+    right.play();
     direction = "left";
   } else if (keyCode == 38 && direction != "down") {
+    down.play();
     direction = "up";
   } else if (keyCode == 39 && direction != "left") {
+    left.play();
     direction = "right";
   } else if (keyCode == 40 && direction != "up") {
+    up.play();
     direction = "down";
   }
 };
@@ -185,11 +207,6 @@ function drawFood(posx, posy) {
   ctx.fillRect(posx * cell, posy * cell, cell, cell);
   ctx.fillStyle = "#000"; //border around food
   ctx.strokeRect(posx * cell, posy * cell, cell, cell);
-
-  //this stops the food from blinking
-  /* requestAnimationFrame(function() {
-    drawFood(posx, posy);
-  }); */
 }
 
 //draw score
@@ -200,29 +217,38 @@ function drawScore(player) {
 }
 
 function hitTheWall(players) {
-  /* for (var i = 0; i < players.length; i++) {
+  for (var i = 0; i < players.length; i++) {
     if (
       players[i].x < 0 ||
       players[i].x > cvsW / cell - 1 ||
       players[i].y < 0 ||
       players[i].y > cvsH / cell - 1
     ) {
-      console.log("i just hit the wall");
-      //dead.play();
-      direction = "";
+      //console.log("i just hit the wall");
+      dead.play();
+      //alert(`${players[i].name} Died!`);
       //clearInterval(game);
-      //setTimeout(game, 1000);
-      //document.removeEventListener("keydown");
-      //console.log("you lost!");
     }
-  } */
+  }
+}
+const LIMIT = 2;
+function checkScoreLimit(players) {
+  for (var i = 0; i < players.length; i++) {
+    if (players[i].score == LIMIT) {
+      if (players.length > 0) {
+        if (players[i].score > players[i + 1].score) {
+          alert(`${players[i].name} Won!`);
+        } else {
+          alert(`${players[i + 1].name} Won!`);
+        }
+      }
+      clearInterval(game);
+    }
+  }
 }
 
-function delay() {
-  //delay snake
-  clearInterval(game);
-  setTimeout(game, 1000);
-}
+var oldScore;
+var newScore;
 
 /******************************************
  ******** GAME STARTS HERE ****************
@@ -236,9 +262,8 @@ socket.on("welcome", (thisPlayer, allplayers) => {
     //draw current player Snake
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  //draw this player
-  //drawPlayerSnake(thisPlayer, thisPlayer.snake);
-  //setInterval(drawAll, 500);
+  //get player initial score
+  oldScore = thisPlayer.score;
 });
 
 //update other users canvas with new players when new player joins
@@ -279,9 +304,6 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        //drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake hits wall
-        hitTheWall(allplayers);
       });
       break;
     case "down":
@@ -294,9 +316,6 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        //drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake hits wall
-        hitTheWall(allplayers);
       });
       break;
     case "left":
@@ -309,9 +328,6 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        //drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake hits wall
-        hitTheWall(allplayers);
       });
       break;
     case "right":
@@ -324,16 +340,29 @@ function moveSnake() {
           //update all snakes on canvas
           drawPlayerSnake(allplayers[i], allplayers[i].snake);
         }
-        // drawPlayerSnake(thisPlayer, thisPlayer.snake);
-        //check if snake hits wall
-        hitTheWall(allplayers);
       });
       break;
+  } //end switch statement
+
+  //logic for playing eat audio
+  if (newScore > oldScore) {
+    //meaning player has eaten food
+    eat.play();
+    //update oldscore
+    oldScore = newScore;
   }
+  socket.on("player moved", (thisPlayer, allplayers) => {
+    //check for update score
+    newScore = thisPlayer.score;
+    //check if snake hits wall
+    hitTheWall(allplayers);
+    //check if score limit is reached
+    //checkScoreLimit(allplayers);
+  });
 }
 
 let game = setInterval(moveSnake, 1000 / 3);
-
+/* 
 var maxTicks = 90;
 var tickCount = 0;
 
@@ -343,10 +372,10 @@ function tick() {
     clearInterval(myInterval);
     return;
   }
-  /*on each tick */
+  //on each tick 
   document.getElementById("timer").innerHtml = maxTicks - tickCount;
   tickCount++;
-}
+} */
 
 //if (players.length > 0) {
 // Start calling tick function every 1 second.

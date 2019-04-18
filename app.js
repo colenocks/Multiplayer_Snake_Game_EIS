@@ -4,7 +4,7 @@ var express = require("express");
 var app = express();
 app.use(express.static("public"));
 var http = require("http").Server(app);
-var port = process.env.PORT || 1337;
+var port = process.env.PORT || 3000;
 //var server = app.listen(port);
 //app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", function(req, res) {
