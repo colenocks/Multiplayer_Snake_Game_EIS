@@ -168,6 +168,7 @@ io.sockets.on("connection", function(socket) {
           }
         }
         io.emit("player moved", currentPlayer, players);
+        socket.broadcast.emit("check player", currentPlayer, players);
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }
@@ -184,6 +185,7 @@ io.sockets.on("connection", function(socket) {
           }
         }
         io.emit("player moved", currentPlayer, players);
+        socket.broadcast.emit("check player", currentPlayer, players);
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }
@@ -200,6 +202,7 @@ io.sockets.on("connection", function(socket) {
           }
         }
         io.emit("player moved", currentPlayer, players);
+        socket.broadcast.emit("check player", currentPlayer, players);
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }
@@ -216,6 +219,7 @@ io.sockets.on("connection", function(socket) {
           }
         }
         io.emit("player moved", currentPlayer, players);
+        socket.broadcast.emit("check player", currentPlayer, players);
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }

@@ -351,7 +351,7 @@ function moveSnake() {
     //update oldscore
     oldScore = newScore;
   }
-  socket.on("player moved", (thisPlayer, allplayers) => {
+  socket.on("check player", (thisPlayer, allplayers) => {
     //check for update score
     newScore = thisPlayer.score;
     //check if snake hits wall
