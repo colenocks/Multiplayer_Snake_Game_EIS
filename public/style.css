@@ -29,21 +29,6 @@ body {
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   font-size: 2rem;
 }
-.left {
-  position: relative;
-  float: left;
-  width: 50%;
-}
-
-.right {
-  position: relative;
-  float: right;
-  width: 50%;
-}
-
-.center {
-  float: center;
-}
 
 #logo {
   margin-right: 20px;
@@ -121,16 +106,26 @@ header h2 {
 .noBottom-margin {
   margin-bottom: 0;
 }
+#timer {
+  font-size: 2.5rem;
+  margin: 0 auto;
+  text-align: center;
+}
 
 #versus {
   width: 500px;
   visibility: hidden;
+  background: #608da7;
   margin-bottom: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
-#p-two {
+#p-one {
   float: left;
+}
+
+#p-two {
+  float: right;
 }
 
 #snake-race {
