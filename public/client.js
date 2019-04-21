@@ -1,12 +1,16 @@
+//Variables
 let logindiv = document.getElementById("login-div");
+let welcomeMessage = document.getElementById("welcome-message");
 let userform = document.getElementById("user-form");
 
 let menu = document.getElementById("menu-area");
 let users = document.getElementById("users-area");
 let gamefield = document.getElementById("game-field");
 let welcomediv = document.getElementById("welcome-div");
+let joinMessage = document.getElementById("join-message");
 let versusdiv = document.getElementById("versus");
 const cvs = document.getElementById("snake-race");
+let message = document.getElementById("message");
 
 let playersList = document.getElementById("players-list");
 let loginbtn = document.getElementById("login");
@@ -18,6 +22,7 @@ let playername = document.getElementById("playername");
 let playerOne = document.getElementById("p-one");
 let playerTwo = document.getElementById("p-two");
 
+//socket connection
 let socket = io();
 
 userform.onsubmit = function(e) {
@@ -30,19 +35,24 @@ userform.onsubmit = function(e) {
     logindiv.style.display = "none"; // set userform display to none
     playbtn.disabled = true;
   } else {
-    alert("Enter a valid name");
+    WelcomeMessage("Enter a valid name!");
   }
 };
 
 logoutbtn.onclick = function() {
   //display a modal that confirms exit
-  document.getElementById("game-area").style.display = "Block";
-  //close socket connection
-  socket.close();
+  if (confirm("Are You sure you want to leave?")) {
+    //close socket connection
+    socket.close();
+    document.location.reload(true);
+  }
 };
 
 joinbtn.onclick = function() {
   playbtn.disabled = false;
+  //Display you have joined the game
+  JoinMessage("You just joined the game");
+  joinbtn.disabled = true;
 };
 
 playbtn.onclick = function() {
@@ -132,6 +142,32 @@ function setChallengeBoard(players) {
   }
 }
 
+function WelcomeMessage(text) {
+  //clear content of the message well
+  welcomeMessage.innerHTML = "";
+  welcomeMessage.setAttribute("class", "alert alert-sm alert-warning");
+  welcomeMessage.style.width = "auto";
+  let textnode = document.createTextNode(text);
+  welcomeMessage.appendChild(textnode);
+}
+
+function JoinMessage(text) {
+  //clear content of the message well
+  joinMessage.innerHTML = "";
+  joinMessage.setAttribute("class", "alert alert-sm alert-warning");
+  joinMessage.style.width = "auto";
+  let textnode = document.createTextNode(text);
+  joinMessage.appendChild(textnode);
+}
+
+function printMessage(text) {
+  //clear content of the message well
+  message.innerHTML = "";
+  let textnode = document.createTextNode(text);
+  message.appendChild(textnode);
+}
+//printMessage("hi");
+
 socket.on("add player", allplayers => {
   let length = allplayers.length;
   console.log(`Total Players: ${length}`);
@@ -216,21 +252,6 @@ function drawScore(player) {
   ctx.fillText(player.score, player.scorePos.x, player.scorePos.y);
 }
 
-function hitTheWall(players) {
-  for (var i = 0; i < players.length; i++) {
-    if (
-      players[i].x < 0 ||
-      players[i].x > cvsW / cell - 1 ||
-      players[i].y < 0 ||
-      players[i].y > cvsH / cell - 1
-    ) {
-      //console.log("i just hit the wall");
-      dead.play();
-      //alert(`${players[i].name} Died!`);
-      //clearInterval(game);
-    }
-  }
-}
 const LIMIT = 2;
 function checkScoreLimit(players) {
   for (var i = 0; i < players.length; i++) {
@@ -273,7 +294,7 @@ socket.on("update players", allplayers => {
     //draw each player Snake
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  console.log("A new player just joined");
+  printMessage("A new player just joined");
 });
 
 socket.on("send food", function(food) {
@@ -287,7 +308,7 @@ socket.on("player left", function(allplayers) {
   for (let i = 0; i < allplayers.length; i++) {
     drawPlayerSnake(allplayers[i], allplayers[i].snake);
   }
-  console.log("A player has left");
+  printMessage("A player has left");
 });
 
 //setInterval(drawall, 500);
@@ -354,8 +375,6 @@ function moveSnake() {
   socket.on("check player", (thisPlayer, allplayers) => {
     //check for update score
     newScore = thisPlayer.score;
-    //check if snake hits wall
-    hitTheWall(allplayers);
     //check if score limit is reached
     //checkScoreLimit(allplayers);
   });
