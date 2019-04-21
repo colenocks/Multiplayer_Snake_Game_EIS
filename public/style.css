@@ -23,43 +23,51 @@ body {
     justify-content: center; */
   /* background: #608da7; 
   background-size: cover;
-  background-attachment: fixed;*/
-  height: 100%;
+  */
+  min-height: 500px;
+  background-attachment: fixed;
+  overflow-y: hidden;
+  background-image: url("./img/honeycomb.jpg");
+  background-size: cover;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   font-size: 2rem;
+  color: #fff;
 }
 
 #logo {
   margin-right: 20px;
 }
-header {
+#heading {
   height: 50px;
   width: 100%;
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  background-color: #333;
+  background-color: #000;
   color: #fff;
   letter-spacing: 5px;
   padding: 10px;
+  opacity: 0.8;
 }
-header h2 {
+#heading h2 {
   margin-left: 20px;
   margin: auto 0;
 }
 
-#login-form {
+#user-form {
   border-radius: 10px;
-  background: #dbdada;
-  padding: 20px;
   margin: 0 auto;
-  width: 80%;
   position: relative;
-  top: 50vh;
-  left: 10%;
+  font-size: 2rem;
 }
-#login-form button {
+#user-form button {
   margin-top: 10px;
+}
+#user-form input {
+  height: 50px;
+  padding: 5px;
+  opacity: 0.8;
+  font-size: 1.1em;
 }
 
 #menu-area {
@@ -86,7 +94,10 @@ header h2 {
 
 #users-area {
   visibility: hidden;
+  color: #000;
+  text-align: center;
 }
+
 #logout {
   position: relative;
   margin-top: 50px;
@@ -115,6 +126,7 @@ header h2 {
   width: 500px;
   visibility: hidden;
   background: #608da7;
+  opacity: 0.4;
   margin-bottom: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
@@ -150,7 +162,9 @@ header h2 {
 footer {
   padding: 5px;
   width: 100%;
-  background: #252525;
+  font-size: 1.6rem;
+  letter-spacing: 6px;
+  background: transparent;
   position: fixed;
   bottom: 0px;
   left: 0;

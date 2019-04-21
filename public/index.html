@@ -9,25 +9,29 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
     <link type="text/css" rel="stylesheet" href="style.css" />
   <body>
-    <header id="heading">
+    <nav id="heading" class="navbar navbar-inverse">
       <div id="logo"><img src="../img/food.png"></div>
       <h2>SNAKE RACE</h2>
-    </header>
+    </nav>
     <div class="container">
       <div class="row" id="login-div">
-        <div class="col-12 col-s-12">
-          <div id="welcome-message"></div>
+        <div class="col-2"></div>
+        <div class="col-8 col-s-12 ">
           <form id="user-form">
             <div class="form-group">
-              <label>Welcome, Player</label>
+              <label><h3>Welcome, Player</h3></label>
               <input type="text" class="form-control" id="playername"
                 placeholder="Enter Your Name" />
-              <button type="submit" id="login" class="btn btn-primary btn-md">
+              <button type="submit" id="login" class="btn btn-success btn-lg">
                 Login
               </button>
             </div>
           </form>
+          <div id="welcome-message" role="alert">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
         </div>
+        <div class="col-2"></div>
       </div>
       <div class="container-fluid">
           <div class="row" id="game-div">
@@ -55,9 +59,9 @@
               </div>
               <!-- Users Area -->
               <div id="users-area">
-                <h4 class="well noBottom-margin">Active Players</h4>
+                <h4 class="well well-sm noBottom-margin">Active Players</h4>
                 <ul id="players-list" class="list-group"><!-- Dynamic content here --></ul>
-                <button id="logout" class="btn btn-info btn-lg">Log Out</button>
+                <button id="logout" class="btn btn-danger btn-lg">Log Out</button>
               </div>
               
             </div>
@@ -70,7 +74,7 @@
                   </h1>
                   <p id="join-message"></p>
                 </div>
-                <div class="container" id ="versus">
+                <div class="container-fluid" id ="versus">
                   <p id="p-one"></p>
                   <p id="p-two"></p>
                 </div>

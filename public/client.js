@@ -22,6 +22,7 @@ let playername = document.getElementById("playername");
 let playerOne = document.getElementById("p-one");
 let playerTwo = document.getElementById("p-two");
 
+//alert(window.outerHeight);
 //socket connection
 let socket = io();
 
@@ -145,8 +146,12 @@ function setChallengeBoard(players) {
 function WelcomeMessage(text) {
   //clear content of the message well
   welcomeMessage.innerHTML = "";
-  welcomeMessage.setAttribute("class", "alert alert-sm alert-warning");
+  welcomeMessage.setAttribute("class", "alert alert-danger");
   welcomeMessage.style.width = "auto";
+  /* button = createElement("button");
+  button.setAttribute("class", "close");
+  button.setAttribute("data-dismiss", "alert");
+  button.innerHTML = "&times;"; */
   let textnode = document.createTextNode(text);
   welcomeMessage.appendChild(textnode);
 }
@@ -154,7 +159,7 @@ function WelcomeMessage(text) {
 function JoinMessage(text) {
   //clear content of the message well
   joinMessage.innerHTML = "";
-  joinMessage.setAttribute("class", "alert alert-sm alert-warning");
+  joinMessage.setAttribute("class", "alert alert-warning");
   joinMessage.style.width = "auto";
   let textnode = document.createTextNode(text);
   joinMessage.appendChild(textnode);
@@ -250,22 +255,6 @@ function drawScore(player) {
   ctx.fillStyle = "#fff";
   ctx.font = "30px Georgia";
   ctx.fillText(player.score, player.scorePos.x, player.scorePos.y);
-}
-
-const LIMIT = 2;
-function checkScoreLimit(players) {
-  for (var i = 0; i < players.length; i++) {
-    if (players[i].score == LIMIT) {
-      if (players.length > 0) {
-        if (players[i].score > players[i + 1].score) {
-          alert(`${players[i].name} Won!`);
-        } else {
-          alert(`${players[i + 1].name} Won!`);
-        }
-      }
-      clearInterval(game);
-    }
-  }
 }
 
 var oldScore;
