@@ -16,6 +16,7 @@
     <div class="container">
       <div class="row" id="login-div">
         <div class="col-12 col-s-12">
+          <div id="welcome-message"></div>
           <form id="user-form">
             <div class="form-group">
               <label>Welcome, Player</label>
@@ -67,15 +68,16 @@
                     Hi, Welcome to the Snake Race. Click <span>Play</span> to
                     start, Goodluck!
                   </h1>
+                  <p id="join-message"></p>
                 </div>
                 <div class="container" id ="versus">
-                  <div id="p-one"></div>
-                  <div id="p-two"></div>
-                  <div id="timer"></div>
+                  <p id="p-one"></p>
+                  <p id="p-two"></p>
                 </div>
                 <canvas id="snake-race" height="300" width="500">
                   Your Browser does not support the canvas element
                 </canvas>
+                <div id="message" class="well" style="width:500px"></div>
               </div>
             </div>
             <div class="col-3 col-s-12">
