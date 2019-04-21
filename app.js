@@ -42,6 +42,17 @@ class newPlayer {
     if (this.newLength === false) {
       this.snake.pop(); //pop only when snake eats food
     }
+    //make boundary porous
+    if (this.x < 0) {
+      this.x = canvasWidth / cell - 1;
+    } else if (this.x > canvasWidth / cell - 1) {
+      this.x = 0;
+    }
+    if (this.y < 0) {
+      this.y = canvasHeight / cell - 1;
+    } else if (this.y > canvasHeight / cell - 1) {
+      this.y = 0;
+    }
     //set new position coordinates to the new cell
     this.snake.unshift({
       x: this.x,
@@ -219,7 +230,7 @@ io.sockets.on("connection", function(socket) {
           }
         }
         io.emit("player moved", currentPlayer, players);
-        socket.broadcast.emit("check player", currentPlayer, players);
+        socket.emit("check player", currentPlayer, players);
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }
