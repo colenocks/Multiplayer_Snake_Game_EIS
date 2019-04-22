@@ -24,11 +24,12 @@ body {
   /* background: #608da7; 
   background-size: cover;
   */
-  min-height: 500px;
-  background-attachment: fixed;
-  overflow-y: hidden;
+  margin: 0;
+  height: 100%;
   background-image: url("./img/honeycomb.jpg");
+  background-attachment: fixed;
   background-size: cover;
+  background-position: center;
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   font-size: 2rem;
   color: #fff;
@@ -53,21 +54,31 @@ body {
   margin-left: 20px;
   margin: auto 0;
 }
+.fit {
+  min-height: 750px;
+}
 
-#user-form {
+#user-form,
+#signup-form {
   border-radius: 10px;
   margin: 0 auto;
   position: relative;
   font-size: 2rem;
 }
-#user-form button {
+#user-form button,
+#signup-form button {
   margin-top: 10px;
 }
-#user-form input {
+#user-form input,
+#signup-form input {
   height: 50px;
   padding: 5px;
   opacity: 0.8;
   font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+#switch {
 }
 
 #menu-area {
@@ -126,7 +137,7 @@ body {
   width: 500px;
   visibility: hidden;
   background: #608da7;
-  opacity: 0.4;
+  opacity: 0.8;
   margin-bottom: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
@@ -166,7 +177,7 @@ footer {
   letter-spacing: 6px;
   background: transparent;
   position: fixed;
-  bottom: 0px;
+  bottom: 0;
   left: 0;
   text-align: center;
   color: #fff;

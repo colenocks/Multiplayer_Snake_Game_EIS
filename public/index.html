@@ -9,89 +9,114 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> 
     <link type="text/css" rel="stylesheet" href="style.css" />
   <body>
-    <nav id="heading" class="navbar navbar-inverse">
-      <div id="logo"><img src="../img/food.png"></div>
-      <h2>SNAKE RACE</h2>
-    </nav>
-    <div class="container">
-      <div class="row" id="login-div">
-        <div class="col-2"></div>
-        <div class="col-8 col-s-12 ">
-          <form id="user-form">
-            <div class="form-group">
-              <label><h3>Welcome, Player</h3></label>
-              <input type="text" class="form-control" id="playername"
-                placeholder="Enter Your Name" />
-              <button type="submit" id="login" class="btn btn-success btn-lg">
-                Login
-              </button>
+    <div id="my-body">
+      <nav id="heading" class="navbar navbar-inverse">
+        <div id="logo"><img src="./img/food.png"></div>
+        <h2>SNAKE RACE</h2>
+      </nav>
+      <div class="container fit">
+        <div class="row" id="login-div">
+          <div class="col-5 col-s-12 ">
+            <form id="user-form">
+              <div class="form-group">
+                <label><h3>Welcome, Player</h3></label>
+                <input type="text" class="form-control" id="playername"
+                  placeholder="Enter Your Username" />
+                  <input type="text" class="form-control" id="playerpassword"
+                  placeholder="password" />
+                <button type="submit" id="login" class="btn btn-success btn-lg">
+                  Login
+                </button>
+              </div>
+            </form>
+            <div id="welcome-message" role="alert">
             </div>
-          </form>
-          <div id="welcome-message" role="alert">
-              <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+          <div class="col-2">
+            <button id="switch" class="btn btn-primary">
+              SWITCH
+            </button>
+          </div>
+          <div class="col-5 col-s-12 ">
+            <form id="signup-form">
+              <div class="form-group">
+                <label><h3>SIGN UP</h3></label>
+                <input type="text" class="form-control" id="username"
+                  placeholder="Specify a valid name"/>
+                <input type="text" class="form-control" id="password"
+                placeholder="Enter a password" />
+                <input type="text" class="form-control" id="confirm-password"
+                  placeholder="Repeat password" />
+                <button type="submit" id="signup" class="btn btn-success btn-lg">
+                  Sign Up
+                </button>
+              </div>
+            </form>
+            <div id="welcome-message" role="alert">
+            </div>
           </div>
         </div>
-        <div class="col-2"></div>
-      </div>
-      <div class="container-fluid">
-          <div class="row" id="game-div">
-            <div class="col-3 col-s-6">
-              <!-- Menu Area -->
-              <div id="menu-area">
-                <ul>
-                  <li>
-                    <input
-                      type="button"
-                      id="join"
-                      class="btn btn-primary btn-lg"
-                      value="Join"
-                    />
-                  </li>
-                  <li>
-                    <input
-                      type="button"
-                      id="play"
-                      class="btn btn-success btn-lg"
-                      value="play"
-                    />
-                  </li>
-                </ul>
-              </div>
-              <!-- Users Area -->
-              <div id="users-area">
-                <h4 class="well well-sm noBottom-margin">Active Players</h4>
-                <ul id="players-list" class="list-group"><!-- Dynamic content here --></ul>
-                <button id="logout" class="btn btn-danger btn-lg">Log Out</button>
-              </div>
-              
-            </div>
-            <div class="col-6 col-s-9">
-              <div id="game-field">
-                <div id="welcome-div">
-                  <h1>
-                    Hi, Welcome to the Snake Race. Click <span>Play</span> to
-                    start, Goodluck!
-                  </h1>
-                  <p id="join-message"></p>
+        <div class="container-fluid">
+            <div class="row" id="game-div">
+              <div class="col-3 col-s-6">
+                <!-- Menu Area -->
+                <div id="menu-area">
+                  <ul>
+                    <li>
+                      <input
+                        type="button"
+                        id="join"
+                        class="btn btn-primary btn-lg"
+                        value="Join"
+                      />
+                    </li>
+                    <li>
+                      <input
+                        type="button"
+                        id="play"
+                        class="btn btn-success btn-lg"
+                        value="play"
+                      />
+                    </li>
+                  </ul>
                 </div>
-                <div class="container-fluid" id ="versus">
-                  <p id="p-one"></p>
-                  <p id="p-two"></p>
+                <!-- Users Area -->
+                <div id="users-area">
+                  <h4 class="well well-sm noBottom-margin">Active Players</h4>
+                  <ul id="players-list" class="list-group"><!-- Dynamic content here --></ul>
+                  <button id="logout" class="btn btn-danger btn-lg">Log Out</button>
                 </div>
-                <canvas id="snake-race" height="300" width="500">
-                  Your Browser does not support the canvas element
-                </canvas>
-                <div id="message" class="well" style="width:500px"></div>
-              </div>
-            </div>
-            <div class="col-3 col-s-12">
                 
+              </div>
+              <div class="col-6 col-s-9">
+                <div id="game-field">
+                  <div id="welcome-div">
+                    <h1>
+                      Hi, Welcome to the Snake Race. Click <span>Play</span> to
+                      start, Goodluck!
+                    </h1>
+                    <p id="join-message"></p>
+                  </div>
+                  <div class="container-fluid" id ="versus">
+                    <p id="p-one"></p>
+                    <p id="p-two"></p>
+                  </div>
+                  <canvas id="snake-race" height="300" width="500">
+                    Your Browser does not support the canvas element
+                  </canvas>
+                  <div id="message"></div>
+                </div>
+              </div>
+              <div class="col-3 col-s-12" id="score-board">
+                  
+              </div>
             </div>
           </div>
-        </div>
-    <footer>Created by Icardi</footer>
+      </div>
+      <footer>Created by Icardi</footer>
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>  
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>     
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>     
     <script src="../socket.io/socket.io.js"></script>
     <!-- <script src="lib/socket.io-client/dist/socket.io.js"></script> -->
     <script src="client.js"></script>

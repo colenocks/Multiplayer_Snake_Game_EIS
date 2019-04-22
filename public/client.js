@@ -1,7 +1,14 @@
 //Variables
 let logindiv = document.getElementById("login-div");
 let welcomeMessage = document.getElementById("welcome-message");
-let userform = document.getElementById("user-form");
+let loginform = document.getElementById("user-form");
+
+let signupform = document.getElementById("signup-form");
+let playerpassword = document.getElementById("playerpassword");
+let password = document.getElementById("password");
+let username = document.getElementById("username");
+let repeatpassword = document.getElementById("confirm-password");
+let signupbtn = document.getElementById("signup");
 
 let menu = document.getElementById("menu-area");
 let users = document.getElementById("users-area");
@@ -18,25 +25,64 @@ let logoutbtn = document.getElementById("logout");
 let joinbtn = document.getElementById("join");
 let playbtn = document.getElementById("play");
 let playername = document.getElementById("playername");
+let scoreboard = document.getElementById("score-board");
 
 let playerOne = document.getElementById("p-one");
 let playerTwo = document.getElementById("p-two");
 
 //alert(window.outerHeight);
 //socket connection
+signupform.onsubmit = function(e) {
+  e.preventDefault();
+  if (
+    playername.value != "" ||
+    ((password.value != "" || repeatpassword.value != "") &&
+      password.value === repeatpassword.value)
+  ) {
+    //save user information to JSON
+    userdata = {
+      username: password.value,
+      password: username.value
+    };
+    //save user info to JSON
+    socket.emit("save user", userdata);
+    //clear fields
+    playername.value = "";
+    password.value = "";
+    repeatpassword.value = "";
+  } else {
+    WelcomeMessage("Ensure username and passwords are filled");
+    //clear fields
+    playername.value = "";
+    password.value = "";
+    repeatpassword.value = "";
+  }
+};
+
 let socket = io();
 
-userform.onsubmit = function(e) {
+var usersarray = [];
+function displayHighscores(data) {
+  var keys = Object.keys(data);
+  usersarray = keys;
+}
+
+loginform.onsubmit = function(e) {
   e.preventDefault();
-  if (playername.value != "") {
-    socket.emit("player name", playername.value); // send username across to server
-    playername.value = "";
-    menu.style.visibility = "visible";
-    gamefield.style.visibility = "visible"; // display gamefield
-    logindiv.style.display = "none"; // set userform display to none
-    playbtn.disabled = true;
-  } else {
-    WelcomeMessage("Enter a valid name!");
+  loadJSON("./users", data);
+  var keys = Object.keys(data);
+
+  for(var i=0;i<keys.length;i++){
+    if (playername.value ==  || playerpassword.value == "" ) {
+      socket.emit("player name", playername.value); // send username across to server
+      playername.value = "";
+      menu.style.visibility = "visible";
+      gamefield.style.visibility = "visible"; // display gamefield
+      logindiv.style.display = "none"; // set userform display to none
+      playbtn.disabled = true;
+    } else {
+      WelcomeMessage("Enter a valid name or password!");
+    }
   }
 };
 
@@ -83,12 +129,12 @@ const right = new Audio();
 const up = new Audio();
 const down = new Audio();
 
-dead.src = "audio/dead.mp3";
-eat.src = "audio/eat.mp3";
-left.src = "audio/left.mp3";
-right.src = "audio/right.mp3";
-up.src = "audio/up.mp3";
-down.src = "audio/down.mp3";
+dead.src = "./audio/dead.mp3";
+eat.src = "./audio/eat.mp3";
+left.src = "./audio/left.mp3";
+right.src = "./audio/right.mp3";
+up.src = "./audio/up.mp3";
+down.src = "./audio/down.mp3";
 
 //add players to list in ul element
 function addPlayersToList(players) {
@@ -354,22 +400,49 @@ function moveSnake() {
       break;
   } //end switch statement
 
-  //logic for playing eat audio
   if (newScore > oldScore) {
-    //meaning player has eaten food
-    eat.play();
-    //update oldscore
-    oldScore = newScore;
+    //logic for playing eat audio
+    eat.play(); //player has eaten food
+    oldScore = newScore; //update oldscore
   }
+  //check for update score
   socket.on("check player", (thisPlayer, allplayers) => {
-    //check for update score
     newScore = thisPlayer.score;
+    console.log(thisPlayer.score);
+
     //check if score limit is reached
-    //checkScoreLimit(allplayers);
+    checkScoreLimit(allplayers);
+    socket.on("winner", name => {
+      printMessage("WINNER: " + name);
+      clearInterval(game);
+    });
   });
 }
 
 let game = setInterval(moveSnake, 1000 / 3);
+
+function checkScoreLimit(players) {
+  const LIMIT = 2;
+  var length = players.length;
+  var index = 0;
+  switch (length) {
+    case 1:
+      if (players[index].score == LIMIT) {
+        socket.emit("send winner", players[index].name);
+      }
+      break;
+    case 2:
+      if (players[index].score == LIMIT) {
+        if (players[index].score > players[index + 1].score) {
+          socket.emit("send winner", players[index].name);
+        } else if (players[index + 1].score == LIMIT) {
+          socket.emit("send winner", players[index + 1].name);
+        }
+        break;
+      }
+  }
+}
+
 /* 
 var maxTicks = 90;
 var tickCount = 0;
