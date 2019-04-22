@@ -1,12 +1,11 @@
 var express = require("express");
-//const bodyParser = require("body-parser");
+var fs = require("fs");
+var users = fs.readFileSync("./public/users.json");
 
 var app = express();
 app.use(express.static("public"));
 var http = require("http").Server(app);
 var port = process.env.PORT || 3000;
-//var server = app.listen(port);
-//app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "/public/index.html");
 });
@@ -131,6 +130,19 @@ function setScorePosition(players) {
 }
 
 io.sockets.on("connection", function(socket) {
+  //save user info to json
+  socket.on("save user", userdata => {
+    var data = JSON.stringify(userdata, null, 2);
+    fs.appendFile("./public/users.json", data, finished);
+    function finished(err) {
+      if (data) {
+        console.log("username saved successfully");
+      } else {
+        console.log("Error:" + err);
+      }
+    }
+  });
+
   let currentPlayer = new newPlayer();
   //receive name from client
   socket.on("player name", name => {
@@ -162,8 +174,8 @@ io.sockets.on("connection", function(socket) {
     broadcastFood();
 
     /* if (players.length == 2) {
-     broadcastFood();
-  } */
+        broadcastFood();
+      } */
 
     socket.on("keypressed", function(key) {
       if (key === 38) {
@@ -214,6 +226,7 @@ io.sockets.on("connection", function(socket) {
         }
         io.emit("player moved", currentPlayer, players);
         socket.broadcast.emit("check player", currentPlayer, players);
+
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }
@@ -231,13 +244,37 @@ io.sockets.on("connection", function(socket) {
         }
         io.emit("player moved", currentPlayer, players);
         socket.emit("check player", currentPlayer, players);
+
         /* socket.emit("player moved", currentPlayer, players);
       socket.broadcast.emit("player moved", currentPlayer, players); */
       }
     });
   });
 
+  //check if there is a winner and broadcast to all clients
+  socket.on("send winner", data => {
+    if (data) {
+      io.emit("winner", data);
+    }
+  });
+
   socket.on("disconnect", function() {
+    var userdata = {
+      name: currentPlayer.name,
+      scores: currentPlayer.score
+    };
+    //save user data from data
+    var data = JSON.stringify(userdata, null, 2);
+    fs.appendFile("./public/users.json", data, finished);
+    function finished(err) {
+      if (data) {
+        console.log("Error: " + err);
+      } else {
+        console.log("object saved succesfully");
+      }
+    }
+
+    //loadJSON("./public/users.json");
     players.splice(players.indexOf(currentPlayer), 1);
     console.log(currentPlayer.name + " just left: ");
     socket.broadcast.emit("player left", players);
