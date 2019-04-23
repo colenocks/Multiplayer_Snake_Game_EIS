@@ -54,6 +54,11 @@ body {
   margin-left: 20px;
   margin: auto 0;
 }
+#switch {
+  position: relative;
+  float: center;
+}
+
 .fit {
   min-height: 750px;
 }
@@ -76,9 +81,6 @@ body {
   opacity: 0.8;
   font-size: 1.1em;
   margin-bottom: 10px;
-}
-
-#switch {
 }
 
 #menu-area {

@@ -10,50 +10,50 @@
     <link type="text/css" rel="stylesheet" href="style.css" />
   <body>
     <div id="my-body">
-      <nav id="heading" class="navbar navbar-inverse">
+      <div id="heading">
         <div id="logo"><img src="./img/food.png"></div>
         <h2>SNAKE RACE</h2>
-      </nav>
+      </div>
       <div class="container fit">
         <div class="row" id="login-div">
-          <div class="col-5 col-s-12 ">
-            <form id="user-form">
-              <div class="form-group">
-                <label><h3>Welcome, Player</h3></label>
-                <input type="text" class="form-control" id="playername"
-                  placeholder="Enter Your Username" />
-                  <input type="text" class="form-control" id="playerpassword"
-                  placeholder="password" />
-                <button type="submit" id="login" class="btn btn-success btn-lg">
-                  Login
-                </button>
-              </div>
-            </form>
-            <div id="welcome-message" role="alert">
+          <div class="col-12">
+              <div id="welcome-message" role="alert">
+                </div>
+              <div class="col-5 col-s-12 ">
+              <form id="user-form">
+                <div class="form-group">
+                  <label><h3>Welcome, Player</h3></label>
+                  <input type="text" class="form-control" id="playername"
+                    placeholder="Enter your username" />
+                    <input type="password" class="form-control" id="playerpassword"
+                    placeholder="Enter your password" />
+                  <button type="submit" id="login" class="btn btn-success btn-lg">
+                    Login
+                  </button>
+                </div>
+              </form>
             </div>
-          </div>
-          <div class="col-2">
-            <button id="switch" class="btn btn-primary">
-              SWITCH
-            </button>
-          </div>
-          <div class="col-5 col-s-12 ">
-            <form id="signup-form">
-              <div class="form-group">
-                <label><h3>SIGN UP</h3></label>
-                <input type="text" class="form-control" id="username"
-                  placeholder="Specify a valid name"/>
-                <input type="text" class="form-control" id="password"
-                placeholder="Enter a password" />
-                <input type="text" class="form-control" id="confirm-password"
-                  placeholder="Repeat password" />
-                <button type="submit" id="signup" class="btn btn-success btn-lg">
-                  Sign Up
+            <div class="col-2">
+                <button id="switch" class="btn btn-info btn-lg">
+                    Switch Forms
                 </button>
-              </div>
-            </form>
-            <div id="welcome-message" role="alert">
             </div>
+            <div class="col-5 col-s-12 ">
+              <form id="signup-form">
+                <div class="form-group">
+                  <label><h3>SIGN UP</h3></label>
+                  <input type="text" class="form-control" id="username"
+                    placeholder="Specify a valid name"/>
+                  <input type="password" class="form-control" id="password"
+                  placeholder="Enter a password" />
+                  <input type="password" class="form-control" id="confirm-password"
+                    placeholder="Repeat password" />
+                  <button type="submit" id="signup" class="btn btn-success btn-lg">
+                    Sign Up
+                  </button>
+                </div>
+              </form>
+            </div>  
           </div>
         </div>
         <div class="container-fluid">

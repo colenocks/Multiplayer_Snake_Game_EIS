@@ -1,6 +1,5 @@
 var express = require("express");
 var fs = require("fs");
-var users = fs.readFileSync("./public/users.json");
 
 var app = express();
 app.use(express.static("public"));
@@ -16,6 +15,23 @@ http.listen(port, function() {
 //setup socket server
 var socket = require("socket.io");
 var io = socket(http);
+
+//my database file creation/initialization
+var usersFile = "./users.json";
+if (!fs.existsSync(usersFile)) {
+  var obj = {
+    users: []
+  };
+  var data = JSON.stringify(obj, null, 2);
+  fs.writeFile(usersFile, data, "utf8", finished);
+  function finished(err) {
+    if (data) {
+      console.log("Users File created");
+    } else {
+      console.log("Error:" + err);
+    }
+  }
+}
 
 const canvasHeight = 300; //document.getElementById("snake-race").clientHeight;
 const canvasWidth = 500; //document.getElementById("snake-race").clientWidth;
@@ -130,16 +146,39 @@ function setScorePosition(players) {
 }
 
 io.sockets.on("connection", function(socket) {
-  //save user info to json
-  socket.on("save user", userdata => {
-    var data = JSON.stringify(userdata, null, 2);
-    fs.appendFile("./public/users.json", data, finished);
-    function finished(err) {
-      if (data) {
-        console.log("username saved successfully");
-      } else {
-        console.log("Error:" + err);
-      }
+  //save user info from client to json
+  socket.on("save user", (username, userpass) => {
+    if (username && userpass) {
+      //load data from file
+      fs.readFile(usersFile, "utf8", (err, data) => {
+        if (err) {
+          console.log("Unable to read or find data: " + err);
+        } else {
+          //load JSON file and retrieve data
+          obj = JSON.parse(data);
+          obj.users.push({ name: username, password: userpass });
+          var data = JSON.stringify(obj, null, 2);
+          //write data to json file
+          fs.writeFile(usersFile, data, "utf8", finished);
+          function finished(err) {
+            if (data) {
+              console.log("data successfully written to JSON");
+            } else {
+              console.log("Error writing data:" + err);
+            }
+          }
+        }
+      });
+    }
+  });
+
+  //load user info for client
+  fs.readFile(usersFile, "utf8", (err, data) => {
+    if (err) {
+      console.log("Unable to read or find data: " + err);
+    } else {
+      obj = JSON.parse(data); //retrieve data
+      socket.emit("get user", obj); //send to client
     }
   });
 
@@ -259,22 +298,22 @@ io.sockets.on("connection", function(socket) {
   });
 
   socket.on("disconnect", function() {
-    var userdata = {
+    /* var userdata = {
       name: currentPlayer.name,
       scores: currentPlayer.score
     };
     //save user data from data
     var data = JSON.stringify(userdata, null, 2);
-    fs.appendFile("./public/users.json", data, finished);
+    fs.appendFile(userFile, data, finished);
     function finished(err) {
       if (data) {
         console.log("Error: " + err);
       } else {
         console.log("object saved succesfully");
       }
-    }
+    } */
 
-    //loadJSON("./public/users.json");
+    //loadJSON(userFile);
     players.splice(players.indexOf(currentPlayer), 1);
     console.log(currentPlayer.name + " just left: ");
     socket.broadcast.emit("player left", players);

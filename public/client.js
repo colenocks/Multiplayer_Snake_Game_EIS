@@ -2,8 +2,10 @@
 let logindiv = document.getElementById("login-div");
 let welcomeMessage = document.getElementById("welcome-message");
 let loginform = document.getElementById("user-form");
-
+let switchbtn = document.getElementById("switch");
 let signupform = document.getElementById("signup-form");
+
+let playername = document.getElementById("playername");
 let playerpassword = document.getElementById("playerpassword");
 let password = document.getElementById("password");
 let username = document.getElementById("username");
@@ -24,14 +26,26 @@ let loginbtn = document.getElementById("login");
 let logoutbtn = document.getElementById("logout");
 let joinbtn = document.getElementById("join");
 let playbtn = document.getElementById("play");
-let playername = document.getElementById("playername");
 let scoreboard = document.getElementById("score-board");
 
 let playerOne = document.getElementById("p-one");
 let playerTwo = document.getElementById("p-two");
 
-//alert(window.outerHeight);
 //socket connection
+let socket = io();
+
+signupbtn.disabled = true;
+switchbtn.onclick = function() {
+  //if login btn is enabled
+  if (loginbtn.disabled == false) {
+    signupbtn.disabled = false;
+    loginbtn.disabled = true;
+  } else if (loginbtn.disabled == true) {
+    signupbtn.disabled = true;
+    loginbtn.disabled = false;
+  }
+};
+
 signupform.onsubmit = function(e) {
   e.preventDefault();
   if (
@@ -39,41 +53,33 @@ signupform.onsubmit = function(e) {
     ((password.value != "" || repeatpassword.value != "") &&
       password.value === repeatpassword.value)
   ) {
-    //save user information to JSON
-    userdata = {
-      username: password.value,
-      password: username.value
-    };
     //save user info to JSON
-    socket.emit("save user", userdata);
+    socket.emit("save user", username.value, password.value);
     //clear fields
-    playername.value = "";
+    username.value = "";
     password.value = "";
     repeatpassword.value = "";
+    WelcomeMessage("User saved successfully!");
   } else {
-    WelcomeMessage("Ensure username and passwords are filled");
+    WelcomeMessage("Ensure username and passwords are filled!");
     //clear fields
-    playername.value = "";
+    username.value = "";
     password.value = "";
     repeatpassword.value = "";
   }
 };
 
-let socket = io();
-
-var usersarray = [];
-function displayHighscores(data) {
-  var keys = Object.keys(data);
-  usersarray = keys;
-}
-
+var keys;
 loginform.onsubmit = function(e) {
   e.preventDefault();
-  loadJSON("./users", data);
-  var keys = Object.keys(data);
 
-  for(var i=0;i<keys.length;i++){
-    if (playername.value ==  || playerpassword.value == "" ) {
+  var userinfo = [];
+  socket.on("get user", data => {
+    console.log(data);
+  });
+  console.log(userinfo);
+  for (var i = 0; i < keys.length; i++) {
+    if (playername.value === i && playerpassword.value === keys[i]) {
       socket.emit("player name", playername.value); // send username across to server
       playername.value = "";
       menu.style.visibility = "visible";

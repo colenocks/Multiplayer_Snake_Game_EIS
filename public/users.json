@@ -1,3 +1,12 @@
 {
-  "scores": 0
+  "users": [
+    {
+      "name": "cole",
+      "password": "1"
+    },
+    {
+      "name": "scott",
+      "password": "2"
+    }
+  ]
 }
