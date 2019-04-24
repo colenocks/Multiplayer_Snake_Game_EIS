@@ -1,6 +1,7 @@
 # Snake-JavaScript
 
 The Snake game, created using JavaScript, and The HTML5 canvas.
+WEBSITE: https://snakerace.herokuapp.com
 
 Download the starter template, and follow the tutorial on youtube step by step.
 
