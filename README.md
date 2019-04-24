@@ -50,3 +50,7 @@ Log: 04/04/2019
 food object is broadcasted to all players at the same spot as opposed to different spots for different users before.
 
 both snake eat the same food and adds to its length.
+
+Log: 10 - 23/04/2019
+validation with forms and JSON
+implemented game over logic by setting score limit to a value whichever snake gets to the value first becomes the winner, hence the name snake race ;)
