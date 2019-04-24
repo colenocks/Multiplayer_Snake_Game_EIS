@@ -1,6 +1,6 @@
 //Variables
 let logindiv = document.getElementById("login-div");
-let welcomeMessage = document.getElementById("welcome-message");
+let welcomeMessageDiv = document.getElementById("welcome-message");
 let loginform = document.getElementById("user-form");
 let switchbtn = document.getElementById("switch");
 let signupform = document.getElementById("signup-form");
@@ -31,6 +31,7 @@ let scoreboard = document.getElementById("score-board");
 let playerOne = document.getElementById("p-one");
 let playerTwo = document.getElementById("p-two");
 
+let clientName; //permanently store user's name
 //socket connection
 let socket = io();
 
@@ -49,7 +50,7 @@ switchbtn.onclick = function() {
 signupform.onsubmit = function(e) {
   e.preventDefault();
   if (
-    playername.value != "" ||
+    username.value != "" ||
     ((password.value != "" || repeatpassword.value != "") &&
       password.value === repeatpassword.value)
   ) {
@@ -69,28 +70,37 @@ signupform.onsubmit = function(e) {
   }
 };
 
-var keys;
 loginform.onsubmit = function(e) {
   e.preventDefault();
+  var data = {
+    name: playername.value,
+    password: playerpassword.value
+  };
+  if (playername.value != "" && playerpassword.value != "") {
+    socket.emit("trigger it", data);
 
-  var userinfo = [];
-  socket.on("get user", data => {
-    console.log(data);
-  });
-  console.log(userinfo);
-  for (var i = 0; i < keys.length; i++) {
-    if (playername.value === i && playerpassword.value === keys[i]) {
-      socket.emit("player name", playername.value); // send username across to server
-      playername.value = "";
-      menu.style.visibility = "visible";
-      gamefield.style.visibility = "visible"; // display gamefield
-      logindiv.style.display = "none"; // set userform display to none
-      playbtn.disabled = true;
-    } else {
-      WelcomeMessage("Enter a valid name or password!");
-    }
+    //function loginFunction() {
+    socket.on("retrieve user", function(data, name) {
+      console.log(data);
+      if (data == true) {
+        socket.emit("player name", name); // send username across to server
+        console.log("entered");
+
+        playername.value = "";
+        playerpassword.value = "";
+        menu.style.visibility = "visible";
+        gamefield.style.visibility = "visible"; // display gamefield
+        logindiv.style.display = "none"; // set userform display to none
+        playbtn.disabled = true;
+      }
+    });
+  } else {
+    WelcomeMessage("Enter a valid name or password!");
+    playername.value = "";
+    playerpassword.value = "";
   }
 };
+//};
 
 logoutbtn.onclick = function() {
   //display a modal that confirms exit
@@ -197,15 +207,15 @@ function setChallengeBoard(players) {
 
 function WelcomeMessage(text) {
   //clear content of the message well
-  welcomeMessage.innerHTML = "";
-  welcomeMessage.setAttribute("class", "alert alert-danger");
-  welcomeMessage.style.width = "auto";
+  welcomeMessageDiv.innerHTML = "";
+  welcomeMessageDiv.setAttribute("class", "alert alert-danger");
+  welcomeMessageDiv.style.width = "auto";
   /* button = createElement("button");
   button.setAttribute("class", "close");
   button.setAttribute("data-dismiss", "alert");
   button.innerHTML = "&times;"; */
   let textnode = document.createTextNode(text);
-  welcomeMessage.appendChild(textnode);
+  welcomeMessageDiv.appendChild(textnode);
 }
 
 function JoinMessage(text) {
@@ -414,40 +424,18 @@ function moveSnake() {
   //check for update score
   socket.on("check player", (thisPlayer, allplayers) => {
     newScore = thisPlayer.score;
-    console.log(thisPlayer.score);
 
     //check if score limit is reached
-    checkScoreLimit(allplayers);
-    socket.on("winner", name => {
-      printMessage("WINNER: " + name);
-      clearInterval(game);
-    });
+    //checkScoreLimit(allplayers);
+    socket.emit("check score", allplayers);
   });
 }
 
+socket.on("send winner", name => {
+  printMessage("WINNER: " + name);
+  clearInterval(game);
+});
 let game = setInterval(moveSnake, 1000 / 3);
-
-function checkScoreLimit(players) {
-  const LIMIT = 2;
-  var length = players.length;
-  var index = 0;
-  switch (length) {
-    case 1:
-      if (players[index].score == LIMIT) {
-        socket.emit("send winner", players[index].name);
-      }
-      break;
-    case 2:
-      if (players[index].score == LIMIT) {
-        if (players[index].score > players[index + 1].score) {
-          socket.emit("send winner", players[index].name);
-        } else if (players[index + 1].score == LIMIT) {
-          socket.emit("send winner", players[index + 1].name);
-        }
-        break;
-      }
-  }
-}
 
 /* 
 var maxTicks = 90;
