@@ -54,10 +54,6 @@ body {
   margin-left: 20px;
   margin: auto 0;
 }
-#switch {
-  position: relative;
-  float: center;
-}
 
 .fit {
   min-height: 750px;
@@ -157,20 +153,35 @@ body {
   background-color: black;
   border: 2px solid #252525;
 }
-/* 
-.scorediv {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  float: left;
-  margin: 5px auto;
-  background: white;
-  color: black;
-  border: 1px solid #000;
-  height: 50px;
-  padding: 10px;
-  z-index: 4;
-} */
+
+/* Tooltip container */
+#switch {
+  position: relative;
+  float: center;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+#switch .tooltiptext {
+  visibility: hidden;
+  width: auto;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -50%;
+}
+
+#switch:hover .tooltiptext {
+  visibility: visible;
+}
 
 footer {
   padding: 5px;
