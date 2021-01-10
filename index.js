@@ -4,11 +4,12 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const { socketServer } = require("./socketServer");
 
 const routes = require("./routes/allRoutes");
 
 const app = express();
-var http = require("http").Server(app);
+
 const port = process.env.PORT || 5000;
 const mongo_uri = process.env.MONGO_URI;
 const db_name = process.env.DB_NAME;
@@ -35,10 +36,6 @@ app.use(cors());
 
 routes(app);
 
-//setup socket server
-const socket = require("socket.io");
-const io = socket(http);
-
 //mongodb connection
 mongoose.Promise = global.Promise;
 mongoose.connect(
@@ -47,9 +44,28 @@ mongoose.connect(
     useNewUrlParser: true,
     useUnifiedTopology: true,
   },
-  () => {
-    app.listen(port, () => {
-      console.log("server is listening on : " + port);
-    });
-  }
+  console.log("Connected to MongoDB")
 );
+
+const server = app.listen(port, () => {
+  console.log("server is listening on : " + port);
+});
+
+const socket = require("socket.io");
+const io = new socket.Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+
+//setup socket server
+socketServer(io);
+
+// io.on("connection", (socket) => {
+//   socket.on("hey", (data) => {
+//     console.log(data);
+//   });
+//   socket.on("disconnect", () => {
+//     console.log("User Disconnected");
+//   });
+// });

@@ -1,10 +1,15 @@
 import axios from "axios";
 const env = process.env.NODE_ENV;
-let baseURL = "";
-if (env === "development") {
-  baseURL = "http://localhost:5000";
-}
+
+export const getBaseURL = () => {
+  let baseURL = "";
+  if (env === "development") {
+    baseURL = "http://localhost:5000";
+  }
+  return baseURL;
+};
 export const clientRequest = (token = null) => {
+  const baseURL = getBaseURL();
   const defaultOptions = {
     headers: {
       Authorization: token ? `Bearer ${token}` : "",

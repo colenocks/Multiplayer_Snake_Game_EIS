@@ -27,8 +27,11 @@
     "node-sass": "^5.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "socket.io": "*",
-    "socket.io-client": "*"
+    "react-router-dom": "^5.2.0",
+    "react-toastify": "^6.2.0",
+    "react-transition-group": "^1.2.1",
+    "socket.io": "^3.0.5",
+    "socket.io-client": "^3.0.5"
   },
   "bugs": {
     "url": "https://github.com/colenocks/Multiplayer_Snake_Game_EIS/issues"

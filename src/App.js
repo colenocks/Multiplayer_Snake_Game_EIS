@@ -5,7 +5,9 @@ import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import Home from "./components/Home/Home";
 import Arena from "./components/Arena/Arena";
-import { clientRequest } from "./AxiosConfig";
+import EnterGame from "./components/EnterGame/EnterGame";
+import { clientRequest, getBaseURL } from "./AxiosConfig";
+import { socketIOClient } from "socket.io-client";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.scss";
@@ -51,7 +53,7 @@ class App extends Component {
             is_logged_in: true,
             user_session: res.data.user_session,
           },
-          () => this.props.history.push("/arena")
+          () => this.props.history.push("/entergame")
         );
       })
       .catch((err) => {
@@ -84,7 +86,8 @@ class App extends Component {
       user_session: null,
       is_logged_in: false,
     });
-
+    const socket = socketIOClient(getBaseURL());
+    socket.close();
     localStorage.clear();
     this.props.history.push("/");
     toast("You have logged out successfully", { type: "warning" });
@@ -114,6 +117,13 @@ class App extends Component {
               exact
               path='/arena'
               render={() => <Arena user_session={this.state.user_session} />}
+            />
+            <Route
+              exact
+              path='/entergame'
+              render={(props) => (
+                <EnterGame {...props} user_session={this.state.user_session} />
+              )}
             />
           </Switch>
         </section>
